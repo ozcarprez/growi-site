@@ -12,7 +12,7 @@ const PRODUCERS = [
     id: "BC-1001",
     region: "Ensenada",
     crops: ["Betabel Rojo", "Betabel Candy", "Betabel Dorado"],
-    capacity: "80+ Sacos",
+    capacity: "300+ Sacos",
     acreage: 20,
     certifications: ["GlobalG.A.P", "SENASICA", "Orgánico"],
     salesType: "EXPORT",
