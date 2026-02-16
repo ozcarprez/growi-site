@@ -10,14 +10,14 @@ const WA_NUMBER = "526631261241";
 const PRODUCERS = [
   {
     id: "BC-1001",
-    region: "San Quintín",
-    crops: ["Fresa", "Frambuesa"],
-    capacity: "350+ Tons/Mes",
-    acreage: 220,
+    region: "Ensenada",
+    crops: ["Betabel Rojo", "Betabel Candy", "Betabel Dorado"],
+    capacity: "80+ Sacos",
+    acreage: 20,
     certifications: ["GlobalG.A.P", "SENASICA", "Orgánico"],
     salesType: "EXPORT",
     verified: true,
-    season: "Oct - Jun",
+    season: "Año completo",
   },
   {
     id: "BC-1002",
