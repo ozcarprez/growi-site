@@ -14,7 +14,7 @@ const PRODUCERS = [
     crops: ["Red Beet", "Candy Beet", "Gold Beet"],
     capacity: "300+ Sacks",
     acreage: 20,
-    certifications: ["GlobalG.A.P", "SENASICA", "Orgánico"],
+    certifications: ["GlobalG.A.P", "SENASICA"],
     salesType: "EXPORT",
     verified: true,
     season: "All year round",
