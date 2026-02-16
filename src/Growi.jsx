@@ -24,7 +24,7 @@ const PRODUCERS = [
     region: "Ensenada",
     crops: ["Broccolini"],
     capacity: "50",
-    acreage: 01,
+    acreage: 10,
     certifications: ["NA"],
     salesType: "EXPORT",
     verified: true,
