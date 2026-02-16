@@ -11,13 +11,13 @@ const PRODUCERS = [
   {
     id: "BC-1001",
     region: "Ensenada",
-    crops: ["Betabel Rojo", "Betabel Candy", "Betabel Dorado"],
-    capacity: "300+ Sacos",
+    crops: ["Red Beet", "Candy Beet", "Gold Beet"],
+    capacity: "300+ Sacks",
     acreage: 20,
     certifications: ["GlobalG.A.P", "SENASICA", "Orgánico"],
     salesType: "EXPORT",
     verified: true,
-    season: "Año completo",
+    season: "All year round",
   },
   {
     id: "BC-1002",
