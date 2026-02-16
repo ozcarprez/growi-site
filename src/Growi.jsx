@@ -9,7 +9,7 @@ const WA_NUMBER = "526631261241";
 // ══════════════════════════════════════
 const PRODUCERS = [
   {
-    id: "BC-1042",
+    id: "BC-1001",
     region: "San Quintín",
     crops: ["Fresa", "Frambuesa"],
     capacity: "350+ Tons/Mes",
@@ -20,7 +20,7 @@ const PRODUCERS = [
     season: "Oct - Jun",
   },
   {
-    id: "BC-1187",
+    id: "BC-1002",
     region: "Maneadero",
     crops: ["Tomate Saladette", "Chile Serrano"],
     capacity: "180 Tons/Mes",
@@ -31,7 +31,7 @@ const PRODUCERS = [
     season: "Mar - Nov",
   },
   {
-    id: "BC-0834",
+    id: "BC-1003",
     region: "Colonet",
     crops: ["Papa", "Cebolla"],
     capacity: "500+ Tons/Mes",
@@ -42,7 +42,7 @@ const PRODUCERS = [
     season: "Año completo",
   },
   {
-    id: "BC-0291",
+    id: "BC-1004",
     region: "Vicente Guerrero",
     crops: ["Cilantro", "Cebollín", "Perejil"],
     capacity: "60 Tons/Mes",
@@ -53,7 +53,7 @@ const PRODUCERS = [
     season: "Año completo",
   },
   {
-    id: "BC-1455",
+    id: "BC-1005",
     region: "San Quintín",
     crops: ["Arándano", "Zarzamora"],
     capacity: "200+ Tons/Mes",
@@ -64,7 +64,7 @@ const PRODUCERS = [
     season: "Abr - Oct",
   },
   {
-    id: "BC-0673",
+    id: "BC-1006",
     region: "Camalú",
     crops: ["Tomate Bola", "Pepino"],
     capacity: "120 Tons/Mes",
@@ -75,7 +75,7 @@ const PRODUCERS = [
     season: "Feb - Oct",
   },
   {
-    id: "BC-1678",
+    id: "BC-1007",
     region: "Ensenada",
     crops: ["Olivo", "Vid"],
     capacity: "90 Tons/Mes",
@@ -86,7 +86,7 @@ const PRODUCERS = [
     season: "Jul - Nov",
   },
   {
-    id: "BC-0512",
+    id: "BC-1008",
     region: "Pescadero",
     crops: ["Chile Shishito", "Jalapeño"],
     capacity: "80 Tons/Mes",
@@ -97,7 +97,7 @@ const PRODUCERS = [
     season: "Mar - Dic",
   },
   {
-    id: "BC-0998",
+    id: "BC-1009",
     region: "San Quintín",
     crops: ["Fresa", "Tomate Cherry"],
     capacity: "280 Tons/Mes",
@@ -108,7 +108,7 @@ const PRODUCERS = [
     season: "Sep - May",
   },
   {
-    id: "BC-1321",
+    id: "BC-1010",
     region: "El Rosario",
     crops: ["Pimiento Morrón", "Tomate"],
     capacity: "150 Tons/Mes",
