@@ -110,7 +110,7 @@ const PRODUCERS = [
   {
     id: "BC-1010",
     region: "El Rosario",
-    crops: ["chile Shishito"],
+    crops: ["Shishito Pepper"],
     capacity: "Few pallets per product",
     acreage: 10,
     certifications: ["NA"],
