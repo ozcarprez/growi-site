@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 const F = "'Instrument Serif', serif";
 const FB = "'Outfit', sans-serif";
 const WA_NUMBER = "526631261241";
-// ══════════════════════════════════════ // PRODUCER DATA — Edit this to update // ══════════════════════════════════════ const PRODUCERS = [ { id: "BC-1001", region: "Ensenada", crops: ["Red Beet", "Candy Beet", "Gold Beet"], capacity: "300+ Sacks", acreage: 20, certifications: ["NA"], salesType: "EXPORT", verified: true, season: "All year round", },
+// ══════════════════════════════════════ // PRODUCER DATA - Edit this to uphdate // ══════════════════════════════════════ const PRODUCERS = [ { id: "BC-1001", region: "Ensenada", crops: ["Red Beet", "Candy Beet", "Gold Beet"], capacity: "300+ Sacks", acreage: 20, certifications: ["NA"], salesType: "EXPORT", verified: true, season: "All year round", },
 { id: "BC-1002", region: "Ensenada", crops: ["Broccolini"], capacity: "50", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: true, season: "All year round", },
 { id: "BC-1003", region: "Ensenada", crops: ["Yellow Summer Squash", "Green Summer Squahs", "Baby Zucchini Squahs", "Faba beans", "Red Beet", "Candy Beet", "Gold Beet", "Watermelon Radish"], capacity: "Few pallets per product", acreage: 20, certifications: ["PrimusGFS"], salesType: "EXPORT", verified: true, season: "All year round", },
 { id: "BC-1004", region: "San Vicente", crops: ["Cilantro", "Carrot", "Red Beet", "Red Radish"], capacity: "Few pallets per product", acreage: 40, certifications: ["USDA Organic", "SENASICA"], salesType: "EXPORT", verified: true, season: "Winter Season", },
