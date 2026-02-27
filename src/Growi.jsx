@@ -333,7 +333,7 @@ export default function Growi() {
   const [selCrop, setSelCrop] = useState("");
   const [selRegion, setSelRegion] = useState("");
   const [selType, setSelType] = useState("");
-  const [showFilters, setShowFilters] = useState(false
+  const [showFilters, setShowFilters] = useState(false);
   const [showSubscribe, setShowSubscribe] = useState(false);
   const [dirVisible, setDirVisible] = useState(false);
   const dirRef = useRef(null);
