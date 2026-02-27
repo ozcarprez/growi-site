@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import SubscribeModal from './SubscribeModal';
+import { checkSubscription } from './stripeHelper';
 const F = "'Instrument Serif', serif";
 const FB = "'Outfit', sans-serif";
 const WA_NUMBER = "526631261241";
@@ -331,10 +333,20 @@ export default function Growi() {
   const [selCrop, setSelCrop] = useState("");
   const [selRegion, setSelRegion] = useState("");
   const [selType, setSelType] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(false
+  const [showSubscribe, setShowSubscribe] = useState(false);
   const [dirVisible, setDirVisible] = useState(false);
   const dirRef = useRef(null);
   const t = TX[lang];
+
+  const handleViewContact = async (userEmail) => {
+    const result = await checkSubscription(userEmail);
+    if (result.active) {
+      // Mostrar datos de contacto del productor
+    } else {
+      setShowSubscribe(true); // Mostrar modal de suscripción
+    }
+  };
 
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
   useEffect(() => {
@@ -512,6 +524,12 @@ export default function Growi() {
                 <a href={waLink(t.plan_dir_wa)} target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", padding: "14px 24px", borderRadius: 100, background: "#4ade80", color: "#0a0f0a", fontFamily: FB, fontSize: 14, fontWeight: 700, boxShadow: "0 0 30px rgba(74,222,128,0.25)" }}>
                   {t.plan_dir_btn}
                 </a>
+                <button
+                  onClick={() => setShowSubscribe(true)}
+                  style={{ display: "block", textAlign: "center", padding: "14px 24px", borderRadius: 100, background: "#4ade80", color: "#0a0f0a", fontFamily: FB, fontSize: 14, fontWeight: 700, border: "none", cursor: "pointer", width: "100%", marginTop: 12, boxShadow: "0 0 30px rgba(74,222,128,0.25)" }}
+                >
+                  {lang === "es" ? "Suscribirse — Ver Datos de Contacto" : "Subscribe — View Contact Data"}
+                </button>
               </div>
             </Section>
             {/* Tarjeta Premium */}
@@ -650,6 +668,7 @@ export default function Growi() {
         <p style={{ fontFamily: FB, fontSize: 13, color: "rgba(255,255,255,0.2)", margin: "12px 0 0", lineHeight: 1.6 }}>{t.footer_p}<br />{t.footer_loc}</p>
         <p style={{ fontFamily: F, fontSize: 14, color: "rgba(255,255,255,0.1)", margin: "24px 0 0", fontStyle: "italic" }}>{t.footer_q}</p>
       </footer>
+      <SubscribeModal isOpen={showSubscribe} onClose={() => setShowSubscribe(false)} />
     </div>
   );
 }
