@@ -278,7 +278,7 @@ const LangToggle = ({ lang, setLang }) => (
   </div>
 );
 
-const ProducerCard = ({ p, t, lang, delay, visible }) => {
+const ProducerCard = ({ p, t, lang, delay, visible, onSubscribe }) => {
   const isExport = p.salesType === "EXPORT";
   return (
     <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 20, border: "1px solid rgba(255,255,255,0.08)", padding: "24px 22px", marginBottom: 16, opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: `all 0.5s ease ${delay}s` }}>
@@ -316,10 +316,10 @@ const ProducerCard = ({ p, t, lang, delay, visible }) => {
         ))}
       </div>
       <div style={{ display: "flex" }}>
-        <a href={waLink(t.wa_intro_msg)} target="_blank" rel="noopener noreferrer" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "13px 16px", borderRadius: 12, textDecoration: "none", background: "linear-gradient(135deg, rgba(74,222,128,0.15), rgba(74,222,128,0.08))", border: "1px solid rgba(74,222,128,0.25)", color: "#4ade80", fontSize: 13, fontWeight: 700, fontFamily: FB, transition: "all 0.15s ease" }}>
+        <button onClick={onSubscribe} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "13px 16px", borderRadius: 12, background: "linear-gradient(135deg, rgba(74,222,128,0.15), rgba(74,222,128,0.08))", border: "1px solid rgba(74,222,128,0.25)", color: "#4ade80", fontSize: 13, fontWeight: 700, fontFamily: FB, transition: "all 0.15s ease", cursor: "pointer" }}>
           <UserCheckIcon size={15} />
           {t.intro_btn}
-        </a>
+        </button>
       </div>
     </div>
   );
@@ -625,7 +625,7 @@ export default function Growi() {
             )}
           </div>
           {filtered.map((p, i) => (
-            <ProducerCard key={p.id} p={p} t={t} lang={lang} delay={0.1 + i * 0.06} visible={dirVisible} />
+            <ProducerCard key={p.id} p={p} t={t} lang={lang} delay={0.1 + i * 0.06} visible={dirVisible} onSubscribe={() => setShowSubscribe(true)} />
           ))}
           {filtered.length === 0 && (
             <div style={{ textAlign: "center", padding: "60px 20px", color: "rgba(255,255,255,0.3)" }}>
