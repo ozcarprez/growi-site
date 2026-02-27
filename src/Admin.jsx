@@ -98,6 +98,61 @@ function FormInput({ label, value, onChange, placeholder, type = 'text', error =
   )
 }
 
+// Moved outside Admin to prevent re-creation on every render
+function PublicFields({ f, setF, errs = {} }) {
+  return (
+    <>
+      <div style={s.formRow}>
+        <label style={s.label}>ID <span style={{ color: 'rgba(255,255,255,0.2)' }}>(solo lectura)</span></label>
+        <input style={{ ...s.input, opacity: 0.5, cursor: 'not-allowed' }} type="text" value={f.id} readOnly />
+      </div>
+      <FormInput label="Región *" value={f.region} onChange={e => setF(x => ({ ...x, region: e.target.value }))} error={!!errs.region} />
+      <FormInput label="Cultivos" value={f.crops} onChange={e => setF(x => ({ ...x, crops: e.target.value }))} placeholder="Separar por comas" />
+      <FormInput label="Capacidad" value={f.capacity} onChange={e => setF(x => ({ ...x, capacity: e.target.value }))} />
+      <FormInput label="Hectáreas" type="number" value={f.acreage} onChange={e => setF(x => ({ ...x, acreage: e.target.value }))} />
+      <FormInput label="Certificaciones" value={f.certifications} onChange={e => setF(x => ({ ...x, certifications: e.target.value }))} placeholder="Separar por comas" />
+      <div style={s.formRow}>
+        <label style={s.label}>Tipo de venta</label>
+        <select style={s.select} value={f.salesType} onChange={e => setF(x => ({ ...x, salesType: e.target.value }))}>
+          <option value="EXPORT" style={{ background: '#1a1a1a' }}>EXPORT</option>
+          <option value="DOMESTIC" style={{ background: '#1a1a1a' }}>DOMESTIC</option>
+        </select>
+      </div>
+      <FormInput label="Temporada" value={f.season} onChange={e => setF(x => ({ ...x, season: e.target.value }))} />
+      <div style={s.checkRow}>
+        <input type="checkbox" id="verified-cb" checked={!!f.verified} onChange={e => setF(x => ({ ...x, verified: e.target.checked }))}
+          style={{ width: 16, height: 16, accentColor: '#4ade80', cursor: 'pointer' }} />
+        <label htmlFor="verified-cb" style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', cursor: 'pointer' }}>Verificado</label>
+      </div>
+    </>
+  )
+}
+
+// Moved outside Admin to prevent re-creation on every render
+function PrivateFields({ f, setF }) {
+  return (
+    <>
+      {[
+        { key: 'ranchName', label: 'Nombre del rancho' },
+        { key: 'producerName', label: 'Nombre del productor' },
+        { key: 'phone', label: 'Teléfono' },
+        { key: 'email', label: 'Email' },
+        { key: 'officePhone', label: 'Teléfono oficina' },
+        { key: 'exactLocation', label: 'Ubicación exacta' },
+      ].map(({ key, label }) => (
+        <div key={key} style={s.formRow}>
+          <label style={s.label}>{label}</label>
+          <input style={s.input} type="text" value={f[key] || ''} onChange={e => setF(x => ({ ...x, [key]: e.target.value }))} />
+        </div>
+      ))}
+      <div style={s.formRow}>
+        <label style={s.label}>Notas</label>
+        <textarea style={s.textarea} value={f.notes || ''} onChange={e => setF(x => ({ ...x, notes: e.target.value }))} />
+      </div>
+    </>
+  )
+}
+
 export default function Admin() {
   const [authed, setAuthed] = useState(() => sessionStorage.getItem('growi_admin') === '1')
   const [pw, setPw] = useState('')
@@ -107,9 +162,9 @@ export default function Admin() {
   const [loading, setLoading] = useState(false)
 
   // Modal estados
-  const [editModal, setEditModal] = useState(null)   // producer object being edited
-  const [newModal, setNewModal] = useState(false)    // crear nuevo
-  const [confirmDelete, setConfirmDelete] = useState(null) // producer id to delete
+  const [editModal, setEditModal] = useState(null)
+  const [newModal, setNewModal] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(null)
 
   const [form, setForm] = useState({})
   const [newForm, setNewForm] = useState(EMPTY_FORM)
@@ -157,7 +212,6 @@ export default function Admin() {
     setNewModal(true)
   }
 
-  // Guardar edición
   async function saveEdit() {
     setSaving(true)
     const payload = {
@@ -189,7 +243,6 @@ export default function Admin() {
     }
   }
 
-  // Crear nuevo
   async function createProducer() {
     const errs = {}
     if (!newForm.id.trim()) errs.id = true
@@ -226,7 +279,6 @@ export default function Admin() {
     }
   }
 
-  // Eliminar
   async function deleteProducer() {
     if (!confirmDelete) return
     setDeleting(true)
@@ -267,61 +319,6 @@ export default function Admin() {
           </div>
         </div>
       </div>
-    )
-  }
-
-  // ---- Bloque reutilizable: campos públicos editables ----
-  function PublicFields({ f, setF, errs = {} }) {
-    return (
-      <>
-        <div style={s.formRow}>
-          <label style={s.label}>ID <span style={{ color: 'rgba(255,255,255,0.2)' }}>(solo lectura)</span></label>
-          <input style={{ ...s.input, opacity: 0.5, cursor: 'not-allowed' }} type="text" value={f.id} readOnly />
-        </div>
-        <FormInput label="Región *" value={f.region} onChange={e => setF(x => ({ ...x, region: e.target.value }))} error={!!errs.region} />
-        <FormInput label="Cultivos" value={f.crops} onChange={e => setF(x => ({ ...x, crops: e.target.value }))} placeholder="Separar por comas" />
-        <FormInput label="Capacidad" value={f.capacity} onChange={e => setF(x => ({ ...x, capacity: e.target.value }))} />
-        <FormInput label="Hectáreas" type="number" value={f.acreage} onChange={e => setF(x => ({ ...x, acreage: e.target.value }))} />
-        <FormInput label="Certificaciones" value={f.certifications} onChange={e => setF(x => ({ ...x, certifications: e.target.value }))} placeholder="Separar por comas" />
-        <div style={s.formRow}>
-          <label style={s.label}>Tipo de venta</label>
-          <select style={s.select} value={f.salesType} onChange={e => setF(x => ({ ...x, salesType: e.target.value }))}>
-            <option value="EXPORT" style={{ background: '#1a1a1a' }}>EXPORT</option>
-            <option value="DOMESTIC" style={{ background: '#1a1a1a' }}>DOMESTIC</option>
-          </select>
-        </div>
-        <FormInput label="Temporada" value={f.season} onChange={e => setF(x => ({ ...x, season: e.target.value }))} />
-        <div style={s.checkRow}>
-          <input type="checkbox" id="verified-cb" checked={!!f.verified} onChange={e => setF(x => ({ ...x, verified: e.target.checked }))}
-            style={{ width: 16, height: 16, accentColor: '#4ade80', cursor: 'pointer' }} />
-          <label htmlFor="verified-cb" style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', cursor: 'pointer' }}>Verificado</label>
-        </div>
-      </>
-    )
-  }
-
-  // ---- Bloque reutilizable: campos privados ----
-  function PrivateFields({ f, setF }) {
-    return (
-      <>
-        {[
-          { key: 'ranchName', label: 'Nombre del rancho' },
-          { key: 'producerName', label: 'Nombre del productor' },
-          { key: 'phone', label: 'Teléfono' },
-          { key: 'email', label: 'Email' },
-          { key: 'officePhone', label: 'Teléfono oficina' },
-          { key: 'exactLocation', label: 'Ubicación exacta' },
-        ].map(({ key, label }) => (
-          <div key={key} style={s.formRow}>
-            <label style={s.label}>{label}</label>
-            <input style={s.input} type="text" value={f[key] || ''} onChange={e => setF(x => ({ ...x, [key]: e.target.value }))} />
-          </div>
-        ))}
-        <div style={s.formRow}>
-          <label style={s.label}>Notas</label>
-          <textarea style={s.textarea} value={f.notes || ''} onChange={e => setF(x => ({ ...x, notes: e.target.value }))} />
-        </div>
-      </>
     )
   }
 
@@ -420,24 +417,20 @@ export default function Admin() {
               <button style={s.btnLogout} onClick={() => setEditModal(null)}>✕ Cerrar</button>
             </div>
 
-            {/* Datos públicos editables */}
             <div style={s.publicSection}>
               <div style={s.sectionLabel}>Datos públicos (editable)</div>
               <PublicFields f={form} setF={setForm} errs={errors} />
             </div>
 
-            {/* Datos privados */}
             <div style={s.privateSection}>
               <div style={s.sectionLabel}>Datos privados (editable)</div>
               <PrivateFields f={form} setF={setForm} />
             </div>
 
-            {/* Botón guardar */}
             <button style={s.btnSave} onClick={saveEdit} disabled={saving}>
               {saving ? 'Guardando...' : 'Guardar cambios'}
             </button>
 
-            {/* Zona de peligro: eliminar */}
             <div style={s.divider} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Zona de peligro</span>
@@ -458,10 +451,8 @@ export default function Admin() {
               <button style={s.btnLogout} onClick={() => setNewModal(false)}>✕ Cerrar</button>
             </div>
 
-            {/* Datos públicos */}
             <div style={s.publicSection}>
               <div style={s.sectionLabel}>Datos públicos</div>
-              {/* ID es editable en el modal de creación */}
               <div style={s.formRow}>
                 <label style={s.label}>ID * <span style={{ color: 'rgba(255,255,255,0.3)' }}>(ej: BC-1014)</span></label>
                 <input
@@ -496,7 +487,6 @@ export default function Admin() {
               </div>
             </div>
 
-            {/* Datos privados */}
             <div style={s.privateSection}>
               <div style={s.sectionLabel}>Datos privados</div>
               <PrivateFields f={newForm} setF={setNewForm} />
@@ -538,4 +528,4 @@ export default function Admin() {
       )}
     </div>
   )
-                    }
+}
