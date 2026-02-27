@@ -25,32 +25,32 @@ export default function SubscribeModal({ isOpen, onClose }) {
   return (
         <div style={styles.overlay} onClick={onClose}>
                 <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-                          <button style={styles.closeBtn} onClick={onClose}>✕</button>button>
+                          <button style={styles.closeBtn} onClick={onClose}>✕</button>
 
                           <div style={styles.header}>
-                                      <div style={styles.badge}>PRO</div>div>
-                                      <h2 style={styles.title}>Growi Pro</h2>h2>
+                                      <div style={styles.badge}>PRO</div>
+                                      <h2 style={styles.title}>Growi Pro</h2>
                                       <p style={styles.subtitle}>
                                                     Accede al directorio completo de productores agrícolas verificados en campo
-                                      </p>p>
-                          </div>div>
+                                      </p>
+                          </div>
 
                           <div style={styles.priceSection}>
-                                      <span style={styles.price}>$3,000</span>span>
-                                      <span style={styles.pricePeriod}> MXN / mes</span>span>
-                          </div>div>
+                                      <span style={styles.price}>$3,000</span>
+                                      <span style={styles.pricePeriod}> MXN / mes</span>
+                          </div>
 
                           <ul style={styles.features}>
-                                      <li style={styles.feature}>✓ Datos de contacto de productores</li>li>
-                                      <li style={styles.feature}>✓ Ubicación y región verificada</li>li>
-                                      <li style={styles.feature}>✓ Certificaciones y cultivos</li>li>
-                                      <li style={styles.feature}>✓ Capacidad y temporadas</li>li>
-                                      <li style={styles.feature}>✓ Actualizaciones mensuales</li>li>
-                          </ul>ul>
+                                      <li style={styles.feature}>✓ Datos de contacto de productores</li>
+                                      <li style={styles.feature}>✓ Ubicación y región verificada</li>
+                                      <li style={styles.feature}>✓ Certificaciones y cultivos</li>
+                                      <li style={styles.feature}>✓ Capacidad y temporadas</li>
+                                      <li style={styles.feature}>✓ Actualizaciones mensuales</li>
+                          </ul>
 
                           <form onSubmit={handleSubmit} style={styles.form}>
                                       <div style={styles.fieldWrapper}>
-                                                    <label style={styles.label}>Correo electrónico *</label>label>
+                                                    <label style={styles.label}>Correo electrónico *</label>
                                                     <input
                                                                     type="email"
                                                                     placeholder="tu@email.com"
@@ -59,9 +59,9 @@ export default function SubscribeModal({ isOpen, onClose }) {
                                                                     required
                                                                     style={styles.input}
                                                                   />
-                                      </div>div>
+                                      </div>
                                       <div style={styles.fieldWrapper}>
-                                                    <label style={styles.label}>Empresa (opcional)</label>label>
+                                                    <label style={styles.label}>Empresa (opcional)</label>
                                                     <input
                                                                     type="text"
                                                                     placeholder="Nombre de tu empresa"
@@ -69,9 +69,9 @@ export default function SubscribeModal({ isOpen, onClose }) {
                                                                     onChange={(e) => setCompanyName(e.target.value)}
                                                                     style={styles.input}
                                                                   />
-                                      </div>div>
+                                      </div>
                                       <div style={styles.fieldWrapper}>
-                                                    <label style={styles.label}>Teléfono (opcional)</label>label>
+                                                    <label style={styles.label}>Teléfono (opcional)</label>
                                                     <input
                                                                     type="tel"
                                                                     placeholder="+52 1234567890"
@@ -79,20 +79,20 @@ export default function SubscribeModal({ isOpen, onClose }) {
                                                                     onChange={(e) => setPhone(e.target.value)}
                                                                     style={styles.input}
                                                                   />
-                                      </div>div>
-                            {error && <p style={styles.error}>{error}</p>p>}
+                                      </div>
+                            {error && <p style={styles.error}>{error}</p>}
                                       <button
                                                     type="submit"
                                                     disabled={loading || !email}
                                                     style={{ ...styles.submitBtn, opacity: loading || !email ? 0.6 : 1 }}
                                                   >
                                         {loading ? 'Redirigiendo a Stripe...' : 'Suscribirse — $3,000 MXN/mes'}
-                                      </button>button>
-                          </form>form>
+                                      </button>
+                          </form>
                 
-                        <p style={styles.secure}>🔒 Pago seguro procesado por Stripe. Cancela cuando quieras.</p>p>
-                </div>div>
-        </div>div>
+                        <p style={styles.secure}>🔒 Pago seguro procesado por Stripe. Cancela cuando quieras.</p>
+                </div>
+        </div>
       );
 }
 
