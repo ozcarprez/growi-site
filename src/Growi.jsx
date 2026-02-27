@@ -521,9 +521,7 @@ export default function Growi() {
                 <div style={{ marginBottom: 24 }}>
                   <span style={{ fontFamily: F, fontSize: 34, color: "#fff" }}>{t.plan_dir_price}</span>
                 </div>
-                <a href={waLink(t.plan_dir_wa)} target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", padding: "14px 24px", borderRadius: 100, background: "#4ade80", color: "#0a0f0a", fontFamily: FB, fontSize: 14, fontWeight: 700, boxShadow: "0 0 30px rgba(74,222,128,0.25)" }}>
-                  {t.plan_dir_btn}
-                </a>
+
                 <button
                   onClick={() => setShowSubscribe(true)}
                   style={{ display: "block", textAlign: "center", padding: "14px 24px", borderRadius: 100, background: "#4ade80", color: "#0a0f0a", fontFamily: FB, fontSize: 14, fontWeight: 700, border: "none", cursor: "pointer", width: "100%", marginTop: 12, boxShadow: "0 0 30px rgba(74,222,128,0.25)" }}
