@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import SubscribeModal from './SubscribeModal';
-import { checkSubscription } from './stripeHelper';
+import AuthModal from './AuthModal';
+import { useAuth, fetchProducers } from './useAuth';
+
 const F = "'Instrument Serif', serif";
 const FB = "'Outfit', sans-serif";
 const WA_NUMBER = "526631261241";
 
-// PRODUCER DATA - Edit this to update
-const PRODUCERS = [
+// Fallback static data (used while Supabase loads or as backup)
+const STATIC_PRODUCERS = [
   { id: "BC-1001", region: "Ensenada", crops: ["Red Beet", "Candy Beet", "Gold Beet"], capacity: "300+ Sacks", acreage: 20, certifications: ["NA"], salesType: "EXPORT", verified: true, season: "All year round" },
   { id: "BC-1002", region: "Ensenada", crops: ["Broccolini"], capacity: "50", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: true, season: "All year round" },
-  { id: "BC-1003", region: "Ensenada", crops: ["Yellow Summer Squash", "Green Summer Squahs", "Baby Zucchini Squahs", "Faba beans", "Red Beet", "Candy Beet", "Gold Beet", "Watermelon Radish"], capacity: "Few pallets per product", acreage: 20, certifications: ["PrimusGFS"], salesType: "EXPORT", verified: true, season: "All year round" },
+  { id: "BC-1003", region: "Ensenada", crops: ["Yellow Summer Squash", "Green Summer Squash", "Baby Zucchini Squash", "Faba beans", "Red Beet", "Candy Beet", "Gold Beet", "Watermelon Radish"], capacity: "Few pallets per product", acreage: 20, certifications: ["PrimusGFS"], salesType: "EXPORT", verified: true, season: "All year round" },
   { id: "BC-1004", region: "San Vicente", crops: ["Cilantro", "Carrot", "Red Beet", "Red Radish"], capacity: "Few pallets per product", acreage: 40, certifications: ["USDA Organic", "SENASICA"], salesType: "EXPORT", verified: true, season: "Winter Season" },
   { id: "BC-1005", region: "Ensenada", crops: ["Strawberry", "Cherry Tomatoes"], capacity: "Few pallets per product", acreage: 40, certifications: ["GlobalG.A.P", "USDA Organic", "PrimusGFS"], salesType: "EXPORT", verified: true, season: "All year round" },
   { id: "BC-1006", region: "San vicente", crops: ["Red Beet", "Candy Beet", "Gold Beet", "Watermelon Radish"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: true, season: "All year round" },
@@ -17,108 +19,141 @@ const PRODUCERS = [
   { id: "BC-1008", region: "Vicente Guerrero", crops: ["Faba Bean", "Tarragon"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: true, season: "Nov - March" },
   { id: "BC-1009", region: "Ensenada", crops: ["Dill", "Mint", "Carrots"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: true, season: "All year round" },
   { id: "BC-1010", region: "El Rosario", crops: ["Shishito Pepper"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: false, season: "Jul - Dec" },
-  { id: "BC-1011", region: "Ojos Negros", crops: ["Shishito Pepper", "Jalap\u00e3o Pepper", "Serrano Pepper", "Red Fresno Pepper"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: false, season: "Jul - Dec" },
+  { id: "BC-1011", region: "Ojos Negros", crops: ["Shishito Pepper", "Jalapeño Pepper", "Serrano Pepper", "Red Fresno Pepper"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: false, season: "Jul - Dec" },
   { id: "BC-1012", region: "Constitucion", crops: ["Shishito Pepper", "Broccolini", "Red Beet", "Watermelon Radish"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: false, season: "Aug - Jun" },
   { id: "BC-1013", region: "Pescadero", crops: ["Basil", "Thai Basil", "Sage", "Chives", "Tarragon"], capacity: "Few pallets per product", acreage: 20, certifications: ["NA"], salesType: "EXPORT", verified: false, season: "Aug - Jun" },
 ];
 
-const ALL_CROPS = [...new Set(PRODUCERS.flatMap((p) => p.crops))].sort();
 const REGION_ORDER = ["Ensenada", "Maneadero", "Colonet", "Vicente Guerrero", "Camalu", "San Quintin", "El Rosario", "Pescadero"];
+
+// Normalize producer from Supabase RPC to match component format
+function normalizeProducer(p) {
+  return {
+    id: p.id,
+    region: p.region || '',
+    crops: Array.isArray(p.crops) ? p.crops : [],
+    capacity: p.capacity || '',
+    acreage: p.acreage || 0,
+    certifications: Array.isArray(p.certifications) ? p.certifications : ['NA'],
+    salesType: p.sales_type || 'EXPORT',
+    verified: !!p.verified,
+    season: p.season || '',
+    // Contact fields (null if not subscriber)
+    ranchName: p.ranch_name || null,
+    producerName: p.producer_name || null,
+    phone: p.phone || null,
+    email: p.email || null,
+    officePhone: p.office_phone || null,
+    exactLocation: p.exact_location || null,
+    notes: p.notes || null,
+    isSubscriber: p.is_subscriber || false,
+  };
+}
 
 const TX = {
   es: {
     nav_cta: "Ver Productores",
     badge: "Baja California, Mexico",
-    h1a: "Inteligencia agr\u00edcola",
+    h1a: "Inteligencia agrícola",
     h1b: "verificada en campo",
-    hero_p: "Datos de productores reales que no encontrar\u00e1s en internet. Verificados en persona, actualizados por temporada. Suscr\u00edbete al directorio o solicita una b\u00fasqueda personalizada.",
+    hero_p: "Datos de productores reales que no encontrarás en internet. Verificados en persona, actualizados por temporada. Suscríbete al directorio o solicita una búsqueda personalizada.",
     cta1: "Explorar Directorio",
-    cta2: "C\u00f3mo funciona",
+    cta2: "Cómo funciona",
     s1: "Productores",
     s2: "Regiones",
     s3: "Cultivos",
     s4: "Verificados en campo",
-    who_label: "\u00bfPara qui\u00e9n es Growi?",
+    who_label: "¿Para quién es Growi?",
     who_h2a: "Si necesitas llegar a un productor en Baja California,",
     who_h2b: "es para ti.",
     who_audiences: [
       { t: "Compradores e importadores", d: "Buscan producto fresco de Baja California" },
-      { t: "Semilleras, insumos y empaque", d: "Semillas, pl\u00e1sticos, cintas de riego, cajas, tarimas y m\u00e1s" },
+      { t: "Semilleras, insumos y empaque", d: "Semillas, plásticos, cintas de riego, cajas, tarimas y más" },
       { t: "Empresas de factoraje", d: "Necesitan relaciones comerciales activas verificadas" },
     ],
-    how_label: "C\u00f3mo Funciona",
+    how_label: "Cómo Funciona",
     how_h2a: "Explora.",
     how_h2b: "Conecta seguro.",
     steps: [
-      { n: "01", t: "Explora el directorio", d: "Busca por cultivo, regi\u00f3n o temporada. Toda la informaci\u00f3n de producci\u00f3n es visible. El contacto del productor est\u00e1 protegido." },
-      { n: "02", t: "Suscr\u00edbete para conectar", d: "Con tu suscripci\u00f3n mensual de $3,000 MXN desbloqueas todos los contactos del directorio. Acceso ilimitado, nuevos productores cada mes." },
-      { n: "03", t: "\u00bfNo lo encuentras? Solicitud premium", d: "Si el producto que buscas no est\u00e1 en el directorio, yo lo busco en campo. Viajo, verifico, y te entrego el contacto listo." },
+      { n: "01", t: "Explora el directorio", d: "Busca por cultivo, región o temporada. Toda la información de producción es visible. El contacto del productor está protegido." },
+      { n: "02", t: "Suscríbete para conectar", d: "Con tu suscripción mensual de $3,000 MXN desbloqueas todos los contactos del directorio. Acceso ilimitado, nuevos productores cada mes." },
+      { n: "03", t: "¿No lo encuentras? Solicitud premium", d: "Si el producto que buscas no está en el directorio, yo lo busco en campo. Viajo, verifico, y te entrego el contacto listo." },
     ],
     rec: "RECOMENDADO",
     pricing_label: "Acceso",
     pricing_h2a: "Dos formas de",
     pricing_h2b: "conectar",
-    pricing_sub: "Si est\u00e1 en el directorio, desbloquea el contacto. Si no est\u00e1, lo buscamos en campo.",
+    pricing_sub: "Si está en el directorio, desbloquea el contacto. Si no está, lo buscamos en campo.",
     plan_dir_tag: "DIRECTORIO",
-    plan_dir_t: "Suscripci\u00f3n mensual",
-    plan_dir_d: "Acceso ilimitado a todos los contactos verificados del directorio. Nuevos productores se agregan cada mes \u2014 tu suscripci\u00f3n vale m\u00e1s con el tiempo.",
+    plan_dir_t: "Suscripción mensual",
+    plan_dir_d: "Acceso ilimitado a todos los contactos verificados del directorio. Nuevos productores se agregan cada mes — tu suscripción vale más con el tiempo.",
     plan_dir_features: [
-      "Contacto completo: nombre, tel\u00e9fono, correo, ubicaci\u00f3n",
+      "Contacto completo: nombre, teléfono, correo, ubicación",
       "Acceso ilimitado a todos los productores",
       "Nuevos productores verificados cada mes",
-      "Filtros por cultivo, regi\u00f3n y temporada",
-      "Videos de verificaci\u00f3n en campo",
+      "Filtros por cultivo, región y temporada",
+      "Videos de verificación en campo",
     ],
     plan_dir_price: "$3,000 MXN/mes",
     plan_dir_btn: "Solicitar acceso",
-    plan_dir_wa: "Hola, me interesa la suscripci\u00f3n mensual al directorio de Growi.",
+    plan_dir_wa: "Hola, me interesa la suscripción mensual al directorio de Growi.",
     plan_prem_t: "Solicitud premium",
-    plan_prem_d: "\u00bfNo encuentras lo que buscas en el directorio? Yo lo busco en campo. Viajo, verifico, y te entrego el contacto listo.",
+    plan_prem_d: "¿No encuentras lo que buscas en el directorio? Yo lo busco en campo. Viajo, verifico, y te entrego el contacto listo.",
     plan_prem_features: [
-      "B\u00fasqueda personalizada por cultivo y regi\u00f3n",
-      "Verificaci\u00f3n en campo con evidencia",
+      "Búsqueda personalizada por cultivo y región",
+      "Verificación en campo con evidencia",
       "Datos completos del productor",
-      "Introducci\u00f3n facilitada",
-      "Apoyo en negociaci\u00f3n + seguimiento 7 d\u00edas",
+      "Introducción facilitada",
+      "Apoyo en negociación + seguimiento 7 días",
     ],
-    plan_prem_price: "Precio seg\u00fan ubicaci\u00f3n y complejidad",
+    plan_prem_price: "Precio según ubicación y complejidad",
     plan_prem_btn: "Contactar por WhatsApp",
-    plan_prem_wa: "Hola, necesito una solicitud premium. Busco [cultivo] en [regi\u00f3n].",
-    why_label: "\u00bfPor Qu\u00e9 Growi?",
+    plan_prem_wa: "Hola, necesito una solicitud premium. Busco [cultivo] en [región].",
+    why_label: "¿Por Qué Growi?",
     why_h2a: "Cada dato fue recogido ",
     why_h2b: "en persona",
     why_cards: [
       { t: "Verificado en campo", d: "Cada productor fue visitado personalmente. No hay datos inventados ni scrapeados." },
-      { t: "Privacidad total", d: "N\u00fameros y emails nunca se comparten. Toda la comunicaci\u00f3n pasa por Growi." },
-      { t: "Conexi\u00f3n humana", d: "No eres un usuario m\u00e1s. Facilito introducciones personales y acompa\u00f1o la negociaci\u00f3n." },
+      { t: "Privacidad total", d: "Números y emails nunca se comparten. Toda la comunicación pasa por Growi." },
+      { t: "Conexión humana", d: "No eres un usuario más. Facilito introducciones personales y acompaño la negociación." },
     ],
     dir_label: "Directorio",
     dir_h2a: "Explora el directorio.",
     dir_h2b: "Crece cada mes.",
-    dir_sub: "Explora cultivos, regiones y capacidad gratis. El contacto del productor se desbloquea con tu suscripci\u00f3n. \u00bfNo encuentras lo que buscas? Env\u00eda una solicitud.",
-    search: "Buscar cultivo, regi\u00f3n...",
+    dir_sub: "Explora cultivos, regiones y capacidad gratis. El contacto del productor se desbloquea con tu suscripción. ¿No encuentras lo que buscas? Envía una solicitud.",
+    search: "Buscar cultivo, región...",
     filter: "Filtrar",
     results: "productores",
     corridor: "Ensenada - Pescadero",
     clear: "Limpiar filtros",
     no_t: "Sin resultados",
-    no_p: "Intenta con otro cultivo o regi\u00f3n",
+    no_p: "Intenta con otro cultivo o región",
     f_crop: "CULTIVO",
-    f_region: "REGI\u00d3N",
+    f_region: "REGIÓN",
     f_type: "TIPO VENTA",
     f_all_c: "Todos",
     f_all_r: "Todas",
     f_all_t: "Todos",
     f_exp: "Export",
-    f_dom: "Dom\u00e9stico",
+    f_dom: "Doméstico",
     c_cap: "CAPACIDAD",
     c_sea: "TEMPORADA",
-    c_acr: "HECT\u00c1REAS",
-    intro_btn: "Desbloquear contacto \u2014 Suscr\u00edbete",
+    c_acr: "HECTÁREAS",
+    intro_btn: "Desbloquear contacto — Suscríbete",
     wa_intro_msg: "Hola, me interesa suscribirme al directorio de Growi para acceder a los contactos de productores.",
     footer_p: "Datos verificados en campo. Corredor Ensenada - Pescadero.",
     footer_loc: "Baja California, Mexico.",
     footer_q: "El acceso a la red correcta lo cambia todo.",
+    // Auth strings
+    login: "Iniciar sesión",
+    logout: "Salir",
+    subscriber_badge: "SUSCRIPTOR",
+    contact_title: "Datos de contacto",
+    contact_phone: "Teléfono",
+    contact_office: "Oficina",
+    contact_email: "Email",
+    contact_location: "Ubicación",
+    contact_login_prompt: "Inicia sesión para ver contacto",
   },
   en: {
     nav_cta: "View Producers",
@@ -155,7 +190,7 @@ const TX = {
     pricing_sub: "If it's in the directory, unlock the contact. If not, we find it in the field.",
     plan_dir_tag: "DIRECTORY",
     plan_dir_t: "Monthly subscription",
-    plan_dir_d: "Unlimited access to all verified contacts in the directory. New producers added every month \u2014 your subscription grows more valuable over time.",
+    plan_dir_d: "Unlimited access to all verified contacts in the directory. New producers added every month — your subscription grows more valuable over time.",
     plan_dir_features: [
       "Full contact: name, phone, email, location",
       "Unlimited access to all producers",
@@ -208,11 +243,21 @@ const TX = {
     c_cap: "CAPACITY",
     c_sea: "SEASON",
     c_acr: "ACREAGE",
-    intro_btn: "Unlock contact \u2014 Subscribe",
+    intro_btn: "Unlock contact — Subscribe",
     wa_intro_msg: "Hi, I'm interested in subscribing to the Growi directory to access producer contacts.",
     footer_p: "Field-verified data. Ensenada - Pescadero corridor.",
     footer_loc: "Baja California, Mexico.",
     footer_q: "Access to the right network changes everything.",
+    // Auth strings
+    login: "Sign in",
+    logout: "Sign out",
+    subscriber_badge: "SUBSCRIBER",
+    contact_title: "Contact info",
+    contact_phone: "Phone",
+    contact_office: "Office",
+    contact_email: "Email",
+    contact_location: "Location",
+    contact_login_prompt: "Sign in to view contact",
   },
 };
 
@@ -252,7 +297,6 @@ const StatCard = ({ number, label, delay }) => {
 };
 
 function waLink(msg) { return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`; }
-function buildWaMsg(template, p) { return template.replace("{id}", p.id).replace("{region}", p.region).replace("{crops}", p.crops.join(", ")); }
 
 const SearchIcon = ({ size = 18 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>);
 const FilterIcon = ({ size = 16 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>);
@@ -267,6 +311,8 @@ const UserIcon24 = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="
 const LayersIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>);
 const WHY_ICONS = [<ShieldIcon24 key="s" />, <LockIcon24 key="l" />, <UserIcon24 key="u" />];
 const CheckSm = () => (<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>);
+const PhoneIcon = ({ size = 14 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>);
+const MailIcon = ({ size = 14 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>);
 
 const LangToggle = ({ lang, setLang }) => (
   <div style={{ display: "flex", borderRadius: 100, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: 3, gap: 2 }}>
@@ -278,7 +324,82 @@ const LangToggle = ({ lang, setLang }) => (
   </div>
 );
 
-const ProducerCard = ({ p, t, lang, delay, visible, onSubscribe }) => {
+// === CONTACT INFO SECTION (shown inside producer card) ===
+const ContactInfo = ({ p, t, isSubscriber, user, onLogin, onSubscribe }) => {
+  if (!user) {
+    return (
+      <button onClick={onLogin} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px dashed rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: 600, fontFamily: FB, cursor: 'pointer', transition: 'all 0.15s ease' }}>
+        {t.contact_login_prompt}
+      </button>
+    );
+  }
+
+  if (!isSubscriber) {
+    return (
+      <button onClick={onSubscribe} style={{ flex: 1, width: '100%', display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "13px 16px", borderRadius: 12, background: "linear-gradient(135deg, rgba(74,222,128,0.15), rgba(74,222,128,0.08))", border: "1px solid rgba(74,222,128,0.25)", color: "#4ade80", fontSize: 13, fontWeight: 700, fontFamily: FB, transition: "all 0.15s ease", cursor: "pointer" }}>
+        <UserCheckIcon size={15} />
+        {t.intro_btn}
+      </button>
+    );
+  }
+
+  // ✅ SUBSCRIBER — show contact data
+  const hasContact = p.phone || p.email || p.exactLocation;
+  if (!hasContact) {
+    return (
+      <div style={{ padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: 'rgba(255,255,255,0.3)', fontFamily: FB, textAlign: 'center' }}>
+        Datos de contacto pendientes de verificación
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ borderRadius: 14, border: '1px solid rgba(74,222,128,0.2)', background: 'rgba(74,222,128,0.04)', padding: '16px 18px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+        <ShieldCheck size={14} />
+        <span style={{ fontFamily: FB, fontSize: 12, fontWeight: 700, color: '#4ade80', letterSpacing: 0.5 }}>{t.contact_title}</span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {p.producerName && (
+          <div style={{ fontFamily: FB, fontSize: 15, fontWeight: 700, color: '#fff' }}>
+            {p.producerName}{p.ranchName ? ` — ${p.ranchName}` : ''}
+          </div>
+        )}
+        {p.phone && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <PhoneIcon size={13} />
+            <a href={`tel:${p.phone}`} style={{ fontFamily: FB, fontSize: 14, color: '#4ade80', textDecoration: 'none' }}>{p.phone}</a>
+          </div>
+        )}
+        {p.officePhone && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <PhoneIcon size={13} />
+            <a href={`tel:${p.officePhone}`} style={{ fontFamily: FB, fontSize: 14, color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>{p.officePhone} <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>({t.contact_office})</span></a>
+          </div>
+        )}
+        {p.email && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <MailIcon size={13} />
+            <a href={`mailto:${p.email}`} style={{ fontFamily: FB, fontSize: 14, color: '#4ade80', textDecoration: 'none' }}>{p.email}</a>
+          </div>
+        )}
+        {p.exactLocation && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <MapPinIcon size={13} />
+            <span style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{p.exactLocation}</span>
+          </div>
+        )}
+        {p.notes && (
+          <div style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', marginTop: 4, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8 }}>
+            {p.notes}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin, onSubscribe }) => {
   const isExport = p.salesType === "EXPORT";
   return (
     <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 20, border: "1px solid rgba(255,255,255,0.08)", padding: "24px 22px", marginBottom: 16, opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: `all 0.5s ease ${delay}s` }}>
@@ -315,12 +436,8 @@ const ProducerCard = ({ p, t, lang, delay, visible, onSubscribe }) => {
           <span key={c} style={{ fontFamily: FB, fontSize: 11, fontWeight: 500, padding: "3px 9px", borderRadius: 5, background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.06)" }}>{c}</span>
         ))}
       </div>
-      <div style={{ display: "flex" }}>
-        <button onClick={onSubscribe} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "13px 16px", borderRadius: 12, background: "linear-gradient(135deg, rgba(74,222,128,0.15), rgba(74,222,128,0.08))", border: "1px solid rgba(74,222,128,0.25)", color: "#4ade80", fontSize: 13, fontWeight: 700, fontFamily: FB, transition: "all 0.15s ease", cursor: "pointer" }}>
-          <UserCheckIcon size={15} />
-          {t.intro_btn}
-        </button>
-      </div>
+      {/* Contact section — gated */}
+      <ContactInfo p={p} t={t} isSubscriber={isSubscriber} user={user} onLogin={onLogin} onSubscribe={onSubscribe} />
     </div>
   );
 };
@@ -335,18 +452,38 @@ export default function Growi() {
   const [selType, setSelType] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showSubscribe, setShowSubscribe] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [authView, setAuthView] = useState('login');
+  const [producers, setProducers] = useState([]);
+  const [producersLoading, setProducersLoading] = useState(true);
   const [dirVisible, setDirVisible] = useState(false);
   const dirRef = useRef(null);
   const t = TX[lang];
 
-  const handleViewContact = async (userEmail) => {
-    const result = await checkSubscription(userEmail);
-    if (result.active) {
-      // Mostrar datos de contacto del productor
-    } else {
-      setShowSubscribe(true); // Mostrar modal de suscripción
+  const { user, isSubscriber, loading: authLoading, signOut } = useAuth();
+
+  // Load producers from Supabase
+  useEffect(() => {
+    loadProducers();
+  }, [user]); // Reload when user changes (to get contact data if subscriber)
+
+  async function loadProducers() {
+    setProducersLoading(true);
+    try {
+      const data = await fetchProducers();
+      if (data.length > 0) {
+        setProducers(data.map(normalizeProducer));
+      } else {
+        // Fallback to static data
+        setProducers(STATIC_PRODUCERS.map(p => ({ ...p, ranchName: null, producerName: null, phone: null, email: null, officePhone: null, exactLocation: null, notes: null, isSubscriber: false })));
+      }
+    } catch {
+      setProducers(STATIC_PRODUCERS.map(p => ({ ...p, ranchName: null, producerName: null, phone: null, email: null, officePhone: null, exactLocation: null, notes: null, isSubscriber: false })));
     }
-  };
+    setProducersLoading(false);
+  }
+
+  const openAuth = (view = 'login') => { setAuthView(view); setShowAuth(true); };
 
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
   useEffect(() => {
@@ -362,7 +499,9 @@ export default function Growi() {
     return () => obs.disconnect();
   }, []);
 
-  const filtered = PRODUCERS.filter((p) => {
+  const ALL_CROPS = [...new Set(producers.flatMap((p) => p.crops))].sort();
+
+  const filtered = producers.filter((p) => {
     const q = searchQ.toLowerCase();
     return (
       (!q || p.crops.some((c) => c.toLowerCase().includes(q)) || p.region.toLowerCase().includes(q) || p.id.toLowerCase().includes(q)) &&
@@ -395,12 +534,36 @@ export default function Growi() {
       {/* Grain overlay */}
       <div style={{ position: "fixed", inset: 0, zIndex: 9999, pointerEvents: "none", opacity: 0.03, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`, backgroundSize: "128px 128px", animation: "grain 8s steps(10) infinite" }} />
 
-      {/* NAV */}
+      {/* NAV — now with auth */}
       <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "20px 32px", background: scrollY > 50 ? "rgba(10,15,10,0.9)" : "transparent", backdropFilter: scrollY > 50 ? "blur(20px)" : "none", transition: "all 0.4s ease", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontFamily: FB, fontSize: 22, fontWeight: 800, color: "#fff", letterSpacing: -0.5 }}>Growi</span>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <LangToggle lang={lang} setLang={setLang} />
-          <a href="#directorio" style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: "#0a0f0a", background: "#4ade80", padding: "10px 24px", borderRadius: 100 }}>{t.nav_cta}</a>
+
+          {!authLoading && user ? (
+            /* Logged in */
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              {isSubscriber && (
+                <span style={{ fontFamily: FB, fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: '#0a0f0a', background: '#4ade80', padding: '4px 10px', borderRadius: 100 }}>
+                  {t.subscriber_badge}
+                </span>
+              )}
+              <span style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.4)', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user.email}
+              </span>
+              <button onClick={signOut} style={{ fontFamily: FB, fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.4)', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 16px', borderRadius: 100, transition: 'all 0.2s' }}>
+                {t.logout}
+              </button>
+            </div>
+          ) : !authLoading ? (
+            /* Not logged in */
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button onClick={() => openAuth('login')} style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.6)', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', padding: '10px 20px', borderRadius: 100, transition: 'all 0.2s' }}>
+                {t.login}
+              </button>
+              <a href="#directorio" style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: "#0a0f0a", background: "#4ade80", padding: "10px 24px", borderRadius: 100 }}>{t.nav_cta}</a>
+            </div>
+          ) : null}
         </div>
       </nav>
 
@@ -429,7 +592,7 @@ export default function Growi() {
       {/* STATS */}
       <div style={{ padding: "60px 24px", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: 40, textAlign: "center" }}>
-          <StatCard number={`${PRODUCERS.length}+`} label={t.s1} delay={0} />
+          <StatCard number={`${producers.length}+`} label={t.s1} delay={0} />
           <StatCard number={REGION_ORDER.length} label={t.s2} delay={0.1} />
           <StatCard number={`${ALL_CROPS.length}+`} label={t.s3} delay={0.2} />
           <StatCard number="100%" label={t.s4} delay={0.3} />
@@ -449,9 +612,7 @@ export default function Growi() {
             {t.who_audiences.map((a, i) => (
               <Section key={i} delay={i * 0.1}>
                 <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "20px 24px", borderRadius: 14, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(74,222,128,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <LayersIcon />
-                  </div>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(74,222,128,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><LayersIcon /></div>
                   <div>
                     <div style={{ fontFamily: FB, fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{a.t}</div>
                     <div style={{ fontFamily: FB, fontSize: 13, fontWeight: 300, color: "rgba(255,255,255,0.45)" }}>{a.d}</div>
@@ -491,7 +652,7 @@ export default function Growi() {
         </div>
       </div>
 
-      {/* PRICING — DOS FORMAS DE CONECTAR */}
+      {/* PRICING */}
       <div style={{ padding: "120px 24px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
           <Section style={{ textAlign: "center", marginBottom: 56 }}>
@@ -502,7 +663,6 @@ export default function Growi() {
             <p style={{ fontFamily: FB, fontSize: 16, fontWeight: 300, color: "rgba(255,255,255,0.45)", maxWidth: 480, margin: "0 auto" }}>{t.pricing_sub}</p>
           </Section>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, maxWidth: 760, margin: "0 auto" }}>
-            {/* Tarjeta Suscripcion */}
             <Section delay={0.1}>
               <div style={{ padding: "36px 28px", borderRadius: 20, border: "1px solid rgba(74,222,128,0.3)", background: "linear-gradient(135deg, rgba(74,222,128,0.07), rgba(74,222,128,0.02))", height: "100%", display: "flex", flexDirection: "column" }}>
                 <div style={{ marginBottom: 20 }}>
@@ -521,16 +681,11 @@ export default function Growi() {
                 <div style={{ marginBottom: 24 }}>
                   <span style={{ fontFamily: F, fontSize: 34, color: "#fff" }}>{t.plan_dir_price}</span>
                 </div>
-
-                <button
-                  onClick={() => setShowSubscribe(true)}
-                  style={{ display: "block", textAlign: "center", padding: "14px 24px", borderRadius: 100, background: "#4ade80", color: "#0a0f0a", fontFamily: FB, fontSize: 14, fontWeight: 700, border: "none", cursor: "pointer", width: "100%", marginTop: 12, boxShadow: "0 0 30px rgba(74,222,128,0.25)" }}
-                >
+                <button onClick={() => setShowSubscribe(true)} style={{ display: "block", textAlign: "center", padding: "14px 24px", borderRadius: 100, background: "#4ade80", color: "#0a0f0a", fontFamily: FB, fontSize: 14, fontWeight: 700, border: "none", cursor: "pointer", width: "100%", marginTop: 12, boxShadow: "0 0 30px rgba(74,222,128,0.25)" }}>
                   {lang === "es" ? "Suscribirse — Ver Datos de Contacto" : "Subscribe — View Contact Data"}
                 </button>
               </div>
             </Section>
-            {/* Tarjeta Premium */}
             <Section delay={0.2}>
               <div style={{ padding: "36px 28px", borderRadius: 20, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.02)", height: "100%", display: "flex", flexDirection: "column" }}>
                 <h3 style={{ fontFamily: FB, fontSize: 20, fontWeight: 700, color: "#fff", margin: "0 0 14px" }}>{t.plan_prem_t}</h3>
@@ -624,10 +779,28 @@ export default function Growi() {
               </button>
             )}
           </div>
-          {filtered.map((p, i) => (
-            <ProducerCard key={p.id} p={p} t={t} lang={lang} delay={0.1 + i * 0.06} visible={dirVisible} onSubscribe={() => setShowSubscribe(true)} />
+
+          {producersLoading && (
+            <div style={{ textAlign: 'center', padding: '40px 0', color: 'rgba(255,255,255,0.3)', fontFamily: FB, fontSize: 14 }}>
+              Cargando productores...
+            </div>
+          )}
+
+          {!producersLoading && filtered.map((p, i) => (
+            <ProducerCard
+              key={p.id}
+              p={p}
+              t={t}
+              lang={lang}
+              delay={0.1 + i * 0.06}
+              visible={dirVisible}
+              isSubscriber={isSubscriber}
+              user={user}
+              onLogin={() => openAuth('login')}
+              onSubscribe={() => setShowSubscribe(true)}
+            />
           ))}
-          {filtered.length === 0 && (
+          {!producersLoading && filtered.length === 0 && (
             <div style={{ textAlign: "center", padding: "60px 20px", color: "rgba(255,255,255,0.3)" }}>
               <SearchIcon size={40} />
               <p style={{ fontFamily: FB, fontSize: 15, fontWeight: 500, margin: "16px 0 4px", color: "rgba(255,255,255,0.5)" }}>{t.no_t}</p>
@@ -666,7 +839,10 @@ export default function Growi() {
         <p style={{ fontFamily: FB, fontSize: 13, color: "rgba(255,255,255,0.2)", margin: "12px 0 0", lineHeight: 1.6 }}>{t.footer_p}<br />{t.footer_loc}</p>
         <p style={{ fontFamily: F, fontSize: 14, color: "rgba(255,255,255,0.1)", margin: "24px 0 0", fontStyle: "italic" }}>{t.footer_q}</p>
       </footer>
+
+      {/* Modals */}
       <SubscribeModal isOpen={showSubscribe} onClose={() => setShowSubscribe(false)} />
+      <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} initialView={authView} />
     </div>
   );
 }
