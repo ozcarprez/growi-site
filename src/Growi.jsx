@@ -549,7 +549,7 @@ export default function Growi() {
                 </span>
               )}
               <span style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.4)', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {user.email}
+                {user.user_metadata?.full_name || user.email}
               </span>
               <button onClick={signOut} style={{ fontFamily: FB, fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.4)', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 16px', borderRadius: 100, transition: 'all 0.2s' }}>
                 {t.logout}
