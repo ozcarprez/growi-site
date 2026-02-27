@@ -62,7 +62,7 @@ const s = {
 
 const EMPTY_FORM = { id: '', region: '', crops: '', capacity: '', acreage: '', certifications: '', salesType: 'EXPORT', verified: false, season: '', ranchName: '', producerName: '', phone: '', email: '', officePhone: '', exactLocation: '', notes: '' }
 
-function hasPrivateData(p) { return !!(p.ranch_name && p.producer_name && p.phone && p.email) }
+function hasPrivateData(p) { return !!(p.ranch_name && p.producer_name && p.phone) }
 
 function producerToForm(p) {
   return { id: p.id || '', region: p.region || '', crops: Array.isArray(p.crops) ? p.crops.join(', ') : (p.crops || ''), capacity: p.capacity || '', acreage: p.acreage != null ? String(p.acreage) : '', certifications: Array.isArray(p.certifications) ? p.certifications.join(', ') : (p.certifications || ''), salesType: p.sales_type || p.salesType || 'EXPORT', verified: !!p.verified, season: p.season || '', ranchName: p.ranch_name || '', producerName: p.producer_name || '', phone: p.phone || '', email: p.email || '', officePhone: p.office_phone || '', exactLocation: p.exact_location || '', notes: p.notes || '' }
