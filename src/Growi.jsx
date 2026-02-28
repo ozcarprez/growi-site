@@ -403,27 +403,8 @@ const ContactInfo = ({ p, t, isSubscriber, user, onLogin, onSubscribe }) => {
             <span style={{ fontFamily: FB, fontSize: 14, color: 'rgba(255,255,255,0.6)' }}>{p.secondaryContactName}{p.secondaryContactPhone ? ` — ${p.secondaryContactPhone}` : ''} <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>(Contacto 2)</span></span>
           </div>
         )}
-        {p.packaging && (
-          <div style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>📦 {p.packaging}</div>
-        )}
         {p.paymentMethods && (
           <div style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>💳 {p.paymentMethods}</div>
-        )}
-        {p.borderCrossingDistance && (
-          <div style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>🚛 {p.borderCrossingDistance}</div>
-        )}
-        {p.prices && p.prices.length > 0 && (
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8, marginTop: 4 }}>
-            <span style={{ fontFamily: FB, fontSize: 11, fontWeight: 700, color: 'rgba(74,222,128,0.6)', letterSpacing: 1 }}>PRECIOS</span>
-            {p.prices.map((pr, i) => (
-              <div key={i} style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>
-                {pr.crop}: <span style={{ color: '#4ade80' }}>${pr.price_min}{pr.price_max ? ` — $${pr.price_max}` : ''}</span> / {pr.unit}
-              </div>
-            ))}
-          </div>
-        )}
-        {p.photoUrl && (
-          <img src={p.photoUrl} alt="Rancho" style={{ width: '100%', borderRadius: 10, marginTop: 8, maxHeight: 200, objectFit: 'cover' }} />
         )}
         {p.notes && (
           <div style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', marginTop: 4, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8 }}>
@@ -472,7 +453,31 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
           <span key={c} style={{ fontFamily: FB, fontSize: 11, fontWeight: 500, padding: "3px 9px", borderRadius: 5, background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.06)" }}>{c}</span>
         ))}
       </div>
-      {/* Contact section \u2014 gated */}
+      {/* Public commercial data — visible to everyone */}
+      {p.photoUrl && (
+        <img src={p.photoUrl} alt="Rancho" style={{ width: '100%', borderRadius: 12, marginBottom: 14, maxHeight: 220, objectFit: 'cover', border: '1px solid rgba(255,255,255,0.06)' }} />
+      )}
+      {p.prices && p.prices.length > 0 && (
+        <div style={{ background: 'rgba(74,222,128,0.04)', border: '1px solid rgba(74,222,128,0.12)', borderRadius: 12, padding: '12px 16px', marginBottom: 14 }}>
+          <span style={{ fontFamily: FB, fontSize: 10, fontWeight: 700, color: 'rgba(74,222,128,0.6)', letterSpacing: 1 }}>PRECIOS</span>
+          {p.prices.map((pr, i) => (
+            <div key={i} style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 4 }}>
+              {pr.crop}: <span style={{ color: '#4ade80', fontWeight: 600 }}>${pr.price_min}{pr.price_max ? ` — $${pr.price_max}` : ''}</span> <span style={{ color: 'rgba(255,255,255,0.3)' }}>/ {pr.unit}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {(p.packaging || p.borderCrossingDistance) && (
+        <div style={{ display: 'flex', gap: 16, marginBottom: 14, flexWrap: 'wrap' }}>
+          {p.packaging && (
+            <div style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>📦 {p.packaging}</div>
+          )}
+          {p.borderCrossingDistance && (
+            <div style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>🚛 {p.borderCrossingDistance}</div>
+          )}
+        </div>
+      )}
+      {/* Contact section — gated */}
       <ContactInfo p={p} t={t} isSubscriber={isSubscriber} user={user} onLogin={onLogin} onSubscribe={onSubscribe} />
     </div>
   );
