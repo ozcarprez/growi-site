@@ -24,6 +24,8 @@ const s = {
   inputError: { width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid #ef4444', borderRadius: 12, padding: '12px 16px', color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box', marginBottom: 0 },
   btn: { background: '#4ade80', color: '#0a0f0a', border: 'none', borderRadius: 100, padding: '12px 32px', fontSize: 15, fontWeight: 700, cursor: 'pointer', width: '100%' },
   btnSm: { background: '#4ade80', color: '#0a0f0a', border: 'none', borderRadius: 100, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' },
+  btnSmOutline: { background: 'transparent', color: '#4ade80', border: '1px solid rgba(74,222,128,0.4)', borderRadius: 100, padding: '6px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer' },
+  btnSmDanger: { background: 'rgba(239,68,68,0.15)', color: '#f87171', border: 'none', borderRadius: 100, padding: '6px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer' },
   btnLogout: { background: 'transparent', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 100, padding: '8px 20px', fontSize: 13, cursor: 'pointer' },
   btnDelete: { background: 'rgba(239,68,68,0.15)', color: '#f87171', border: 'none', borderRadius: 100, padding: '12px 28px', fontSize: 14, fontWeight: 600, cursor: 'pointer' },
   btnSave: { background: '#4ade80', color: '#0a0f0a', border: 'none', borderRadius: 100, padding: '12px 32px', fontSize: 15, fontWeight: 700, cursor: 'pointer' },
@@ -47,6 +49,7 @@ const s = {
   sectionLabel: { fontSize: 11, fontWeight: 700, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', marginBottom: 12, textTransform: 'uppercase' },
   publicSection: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 24 },
   privateSection: { border: '1px solid rgba(74,222,128,0.15)', borderRadius: 14, padding: 20, marginBottom: 24 },
+  commercialSection: { border: '1px solid rgba(251,191,36,0.2)', borderRadius: 14, padding: 20, marginBottom: 24 },
   formRow: { marginBottom: 14 },
   label: { display: 'block', fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 6 },
   select: { width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '12px 16px', color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box', appearance: 'none' },
@@ -58,14 +61,43 @@ const s = {
   solicHead: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 120px 140px', gap: 12, padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)', fontSize: 11, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: 1 },
   divider: { borderTop: '1px solid rgba(255,255,255,0.06)', margin: '20px 0' },
   checkRow: { display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0' },
+  priceRow: { display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr auto', gap: 8, alignItems: 'end', marginBottom: 8 },
+  inputSm: { width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '8px 10px', color: '#fff', fontSize: 13, outline: 'none', boxSizing: 'border-box' },
+  labelSm: { display: 'block', fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
 }
 
-const EMPTY_FORM = { id: '', region: '', crops: '', capacity: '', acreage: '', certifications: '', salesType: 'EXPORT', verified: false, season: '', ranchName: '', producerName: '', phone: '', email: '', officePhone: '', exactLocation: '', notes: '' }
+const EMPTY_FORM = {
+  id: '', region: '', crops: '', capacity: '', acreage: '', certifications: '',
+  salesType: 'EXPORT', verified: false, season: '',
+  ranchName: '', producerName: '', phone: '', email: '',
+  officePhone: '', exactLocation: '', notes: '',
+  prices: [], photoUrl: '', packaging: '', paymentMethods: '',
+  secondaryContactName: '', secondaryContactPhone: '', borderCrossingDistance: '',
+}
 
 function hasPrivateData(p) { return !!(p.ranch_name && p.producer_name && p.phone) }
 
 function producerToForm(p) {
-  return { id: p.id || '', region: p.region || '', crops: Array.isArray(p.crops) ? p.crops.join(', ') : (p.crops || ''), capacity: p.capacity || '', acreage: p.acreage != null ? String(p.acreage) : '', certifications: Array.isArray(p.certifications) ? p.certifications.join(', ') : (p.certifications || ''), salesType: p.sales_type || p.salesType || 'EXPORT', verified: !!p.verified, season: p.season || '', ranchName: p.ranch_name || '', producerName: p.producer_name || '', phone: p.phone || '', email: p.email || '', officePhone: p.office_phone || '', exactLocation: p.exact_location || '', notes: p.notes || '' }
+  return {
+    id: p.id || '', region: p.region || '',
+    crops: Array.isArray(p.crops) ? p.crops.join(', ') : (p.crops || ''),
+    capacity: p.capacity || '',
+    acreage: p.acreage != null ? String(p.acreage) : '',
+    certifications: Array.isArray(p.certifications) ? p.certifications.join(', ') : (p.certifications || ''),
+    salesType: p.sales_type || p.salesType || 'EXPORT',
+    verified: !!p.verified, season: p.season || '',
+    ranchName: p.ranch_name || '', producerName: p.producer_name || '',
+    phone: p.phone || '', email: p.email || '',
+    officePhone: p.office_phone || '', exactLocation: p.exact_location || '',
+    notes: p.notes || '',
+    prices: Array.isArray(p.prices) ? p.prices : [],
+    photoUrl: p.photo_url || '',
+    packaging: p.packaging || '',
+    paymentMethods: p.payment_methods || '',
+    secondaryContactName: p.secondary_contact_name || '',
+    secondaryContactPhone: p.secondary_contact_phone || '',
+    borderCrossingDistance: p.border_crossing_distance || '',
+  }
 }
 
 function FormInput({ label, value, onChange, placeholder, type = 'text', error = false }) {
@@ -88,11 +120,89 @@ function PublicFields({ f, setF, errs = {} }) {
 
 function PrivateFields({ f, setF }) {
   return (<>
-    {[{ key: 'ranchName', label: 'Nombre del rancho' }, { key: 'producerName', label: 'Nombre del productor' }, { key: 'phone', label: 'Teléfono' }, { key: 'email', label: 'Email' }, { key: 'officePhone', label: 'Teléfono oficina' }, { key: 'exactLocation', label: 'Ubicación exacta' }].map(({ key, label }) => (
+    {[
+      { key: 'ranchName', label: 'Nombre del rancho' },
+      { key: 'producerName', label: 'Nombre del productor' },
+      { key: 'phone', label: 'Teléfono' },
+      { key: 'email', label: 'Email' },
+      { key: 'officePhone', label: 'Teléfono oficina' },
+      { key: 'exactLocation', label: 'Ubicación exacta' },
+    ].map(({ key, label }) => (
       <div key={key} style={s.formRow}><label style={s.label}>{label}</label><input style={s.input} type="text" value={f[key] || ''} onChange={e => setF(x => ({ ...x, [key]: e.target.value }))} /></div>
     ))}
+    <FormInput label="Contacto secundario — Nombre" value={f.secondaryContactName} onChange={e => setF(x => ({ ...x, secondaryContactName: e.target.value }))} placeholder="Ej: Encargado de ventas" />
+    <FormInput label="Contacto secundario — Teléfono" value={f.secondaryContactPhone} onChange={e => setF(x => ({ ...x, secondaryContactPhone: e.target.value }))} />
+    <FormInput label="Foto del rancho/producto (URL)" value={f.photoUrl} onChange={e => setF(x => ({ ...x, photoUrl: e.target.value }))} placeholder="https://..." />
     <div style={s.formRow}><label style={s.label}>Notas</label><textarea style={s.textarea} value={f.notes || ''} onChange={e => setF(x => ({ ...x, notes: e.target.value }))} /></div>
   </>)
+}
+
+function CommercialFields({ f, setF }) {
+  const prices = f.prices || []
+
+  function addPrice() {
+    setF(x => ({ ...x, prices: [...(x.prices || []), { crop: '', unit: 'Caja', price_min: '', price_max: '' }] }))
+  }
+  function updatePrice(i, field, val) {
+    setF(x => {
+      const p = [...(x.prices || [])]
+      p[i] = { ...p[i], [field]: val }
+      return { ...x, prices: p }
+    })
+  }
+  function removePrice(i) {
+    setF(x => ({ ...x, prices: (x.prices || []).filter((_, idx) => idx !== i) }))
+  }
+
+  return (<>
+    <div style={s.formRow}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <label style={{ ...s.label, marginBottom: 0 }}>Precios por cultivo</label>
+        <button type="button" style={s.btnSmOutline} onClick={addPrice}>+ Agregar precio</button>
+      </div>
+      {prices.map((pr, i) => (
+        <div key={i} style={s.priceRow}>
+          <div><span style={s.labelSm}>Cultivo</span><input style={s.inputSm} value={pr.crop || ''} onChange={e => updatePrice(i, 'crop', e.target.value)} placeholder="Ej: Red Beet" /></div>
+          <div><span style={s.labelSm}>Unidad</span><input style={s.inputSm} value={pr.unit || ''} onChange={e => updatePrice(i, 'unit', e.target.value)} placeholder="Caja/Saco" /></div>
+          <div><span style={s.labelSm}>Precio mín</span><input style={s.inputSm} value={pr.price_min || ''} onChange={e => updatePrice(i, 'price_min', e.target.value)} placeholder="$" /></div>
+          <div><span style={s.labelSm}>Precio máx</span><input style={s.inputSm} value={pr.price_max || ''} onChange={e => updatePrice(i, 'price_max', e.target.value)} placeholder="$" /></div>
+          <button type="button" style={{ ...s.btnSmDanger, alignSelf: 'end', marginBottom: 2 }} onClick={() => removePrice(i)}>✕</button>
+        </div>
+      ))}
+      {prices.length === 0 && <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.2)', padding: '8px 0' }}>Sin precios — click "+ Agregar precio"</div>}
+    </div>
+    <FormInput label="Tipo de empaque" value={f.packaging} onChange={e => setF(x => ({ ...x, packaging: e.target.value }))} placeholder="Ej: Caja, Saco, Granel, Pallet" />
+    <FormInput label="Método de pago" value={f.paymentMethods} onChange={e => setF(x => ({ ...x, paymentMethods: e.target.value }))} placeholder="Ej: Contado, Crédito 30 días, Factoraje" />
+    <FormInput label="Distancia a cruce fronterizo" value={f.borderCrossingDistance} onChange={e => setF(x => ({ ...x, borderCrossingDistance: e.target.value }))} placeholder="Ej: 45 min a garita Otay" />
+  </>)
+}
+
+function formToPayload(form) {
+  return {
+    region: form.region,
+    crops: form.crops.split(',').map(c => c.trim()).filter(Boolean),
+    capacity: form.capacity,
+    acreage: parseInt(form.acreage) || null,
+    certifications: form.certifications.split(',').map(c => c.trim()).filter(Boolean),
+    sales_type: form.salesType,
+    verified: form.verified,
+    season: form.season,
+    ranch_name: form.ranchName,
+    producer_name: form.producerName,
+    phone: form.phone,
+    email: form.email,
+    office_phone: form.officePhone,
+    exact_location: form.exactLocation,
+    notes: form.notes,
+    prices: form.prices || [],
+    photo_url: form.photoUrl || null,
+    packaging: form.packaging || null,
+    payment_methods: form.paymentMethods || null,
+    secondary_contact_name: form.secondaryContactName || null,
+    secondary_contact_phone: form.secondaryContactPhone || null,
+    border_crossing_distance: form.borderCrossingDistance || null,
+    updated_at: new Date().toISOString(),
+  }
 }
 
 export default function Admin() {
@@ -132,7 +242,7 @@ export default function Admin() {
   async function saveEdit() {
     setSaving(true)
     try {
-      await adminFetch('update', 'producers', { data: { region: form.region, crops: form.crops.split(',').map(c => c.trim()).filter(Boolean), capacity: form.capacity, acreage: parseInt(form.acreage) || null, certifications: form.certifications.split(',').map(c => c.trim()).filter(Boolean), sales_type: form.salesType, verified: form.verified, season: form.season, ranch_name: form.ranchName, producer_name: form.producerName, phone: form.phone, email: form.email, office_phone: form.officePhone, exact_location: form.exactLocation, notes: form.notes, updated_at: new Date().toISOString() }, id: editModal.id })
+      await adminFetch('update', 'producers', { data: formToPayload(form), id: editModal.id })
       await loadData(); setEditModal(null); showToast('Guardado correctamente', 'ok')
     } catch (err) { showToast('Error: ' + err.message, 'err') }
     setSaving(false)
@@ -145,7 +255,10 @@ export default function Admin() {
     if (Object.keys(errs).length) { setErrors(errs); return }
     setSaving(true)
     try {
-      await adminFetch('insert', 'producers', { data: { id: newForm.id.trim().toUpperCase(), region: newForm.region, crops: newForm.crops.split(',').map(c => c.trim()).filter(Boolean), capacity: newForm.capacity, acreage: parseInt(newForm.acreage) || null, certifications: newForm.certifications.split(',').map(c => c.trim()).filter(Boolean), sales_type: newForm.salesType, verified: newForm.verified, season: newForm.season, ranch_name: newForm.ranchName, producer_name: newForm.producerName, phone: newForm.phone, email: newForm.email, office_phone: newForm.officePhone, exact_location: newForm.exactLocation, notes: newForm.notes } })
+      const payload = formToPayload(newForm)
+      payload.id = newForm.id.trim().toUpperCase()
+      delete payload.updated_at
+      await adminFetch('insert', 'producers', { data: payload })
       await loadData(); setNewModal(false); showToast('Productor agregado', 'ok')
     } catch (err) { showToast('Error: ' + err.message, 'err') }
     setSaving(false)
@@ -197,14 +310,17 @@ export default function Admin() {
         </div>
       </div>
 
+      {/* EDIT MODAL */}
       {editModal && (<div style={s.overlay} onClick={e => e.target === e.currentTarget && setEditModal(null)}><div style={s.modal}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}><div style={s.modalTitle}>Productor: <span style={{ color: '#4ade80' }}>{editModal.id}</span></div><button style={s.btnLogout} onClick={() => setEditModal(null)}>✕ Cerrar</button></div>
-        <div style={s.publicSection}><div style={s.sectionLabel}>Datos públicos (editable)</div><PublicFields f={form} setF={setForm} errs={errors} /></div>
-        <div style={s.privateSection}><div style={s.sectionLabel}>Datos privados (editable)</div><PrivateFields f={form} setF={setForm} /></div>
+        <div style={s.publicSection}><div style={s.sectionLabel}>Datos públicos</div><PublicFields f={form} setF={setForm} errs={errors} /></div>
+        <div style={s.privateSection}><div style={s.sectionLabel}>Datos privados (contacto)</div><PrivateFields f={form} setF={setForm} /></div>
+        <div style={s.commercialSection}><div style={{ ...s.sectionLabel, color: 'rgba(251,191,36,0.6)' }}>Datos comerciales</div><CommercialFields f={form} setF={setForm} /></div>
         <button style={s.btnSave} onClick={saveEdit} disabled={saving}>{saving ? 'Guardando...' : 'Guardar cambios'}</button>
         <div style={s.divider} /><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}><span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Zona de peligro</span><button style={s.btnDelete} onClick={() => setConfirmDelete(editModal.id)}>Eliminar productor</button></div>
       </div></div>)}
 
+      {/* NEW MODAL */}
       {newModal && (<div style={s.overlay} onClick={e => e.target === e.currentTarget && setNewModal(false)}><div style={s.modal}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}><div style={s.modalTitle}>Nuevo productor</div><button style={s.btnLogout} onClick={() => setNewModal(false)}>✕ Cerrar</button></div>
         <div style={s.publicSection}><div style={s.sectionLabel}>Datos públicos</div>
@@ -219,9 +335,11 @@ export default function Admin() {
           <div style={s.checkRow}><input type="checkbox" id="new-verified-cb" checked={!!newForm.verified} onChange={e => setNewForm(x => ({ ...x, verified: e.target.checked }))} style={{ width: 16, height: 16, accentColor: '#4ade80', cursor: 'pointer' }} /><label htmlFor="new-verified-cb" style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', cursor: 'pointer' }}>Verificado</label></div>
         </div>
         <div style={s.privateSection}><div style={s.sectionLabel}>Datos privados</div><PrivateFields f={newForm} setF={setNewForm} /></div>
+        <div style={s.commercialSection}><div style={{ ...s.sectionLabel, color: 'rgba(251,191,36,0.6)' }}>Datos comerciales</div><CommercialFields f={newForm} setF={setNewForm} /></div>
         <button style={s.btnSave} onClick={createProducer} disabled={saving}>{saving ? 'Guardando...' : 'Crear productor'}</button>
       </div></div>)}
 
+      {/* DELETE CONFIRM */}
       {confirmDelete && (<div style={s.overlay} onClick={e => e.target === e.currentTarget && setConfirmDelete(null)}><div style={s.modalConfirm}>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#f87171', marginBottom: 16 }}>¿Eliminar productor?</div>
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 28 }}>¿Estás seguro de eliminar el productor <strong style={{ color: '#fff' }}>{confirmDelete}</strong>? Esta acción no se puede deshacer.</p>
