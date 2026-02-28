@@ -19,7 +19,7 @@ const STATIC_PRODUCERS = [
   { id: "BC-1008", region: "Vicente Guerrero", crops: ["Faba Bean", "Tarragon"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: true, season: "Nov - March" },
   { id: "BC-1009", region: "Ensenada", crops: ["Dill", "Mint", "Carrots"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: true, season: "All year round" },
   { id: "BC-1010", region: "El Rosario", crops: ["Shishito Pepper"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: false, season: "Jul - Dec" },
-  { id: "BC-1011", region: "Ojos Negros", crops: ["Shishito Pepper", "Jalapeño Pepper", "Serrano Pepper", "Red Fresno Pepper"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: false, season: "Jul - Dec" },
+  { id: "BC-1011", region: "Ojos Negros", crops: ["Shishito Pepper", "Jalape\u00f1o Pepper", "Serrano Pepper", "Red Fresno Pepper"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: false, season: "Jul - Dec" },
   { id: "BC-1012", region: "Constitucion", crops: ["Shishito Pepper", "Broccolini", "Red Beet", "Watermelon Radish"], capacity: "Few pallets per product", acreage: 10, certifications: ["NA"], salesType: "EXPORT", verified: false, season: "Aug - Jun" },
   { id: "BC-1013", region: "Pescadero", crops: ["Basil", "Thai Basil", "Sage", "Chives", "Tarragon"], capacity: "Few pallets per product", acreage: 20, certifications: ["NA"], salesType: "EXPORT", verified: false, season: "Aug - Jun" },
 ];
@@ -46,6 +46,14 @@ function normalizeProducer(p) {
     officePhone: p.office_phone || null,
     exactLocation: p.exact_location || null,
     notes: p.notes || null,
+    // New commercial fields
+    prices: Array.isArray(p.prices) ? p.prices : [],
+    photoUrl: p.photo_url || null,
+    packaging: p.packaging || null,
+    paymentMethods: p.payment_methods || null,
+    secondaryContactName: p.secondary_contact_name || null,
+    secondaryContactPhone: p.secondary_contact_phone || null,
+    borderCrossingDistance: p.border_crossing_distance || null,
     isSubscriber: p.is_subscriber || false,
   };
 }
@@ -54,106 +62,106 @@ const TX = {
   es: {
     nav_cta: "Ver Productores",
     badge: "Baja California, Mexico",
-    h1a: "Inteligencia agrícola",
+    h1a: "Inteligencia agr\u00edcola",
     h1b: "verificada en campo",
-    hero_p: "Datos de productores reales que no encontrarás en internet. Verificados en persona, actualizados por temporada. Suscríbete al directorio o solicita una búsqueda personalizada.",
+    hero_p: "Datos de productores reales que no encontrar\u00e1s en internet. Verificados en persona, actualizados por temporada. Suscr\u00edbete al directorio o solicita una b\u00fasqueda personalizada.",
     cta1: "Explorar Directorio",
-    cta2: "Cómo funciona",
+    cta2: "C\u00f3mo funciona",
     s1: "Productores",
     s2: "Regiones",
     s3: "Cultivos",
     s4: "Verificados en campo",
-    who_label: "¿Para quién es Growi?",
+    who_label: "\u00bfPara qui\u00e9n es Growi?",
     who_h2a: "Si necesitas llegar a un productor en Baja California,",
     who_h2b: "es para ti.",
     who_audiences: [
       { t: "Compradores e importadores", d: "Buscan producto fresco de Baja California" },
-      { t: "Semilleras, insumos y empaque", d: "Semillas, plásticos, cintas de riego, cajas, tarimas y más" },
+      { t: "Semilleras, insumos y empaque", d: "Semillas, pl\u00e1sticos, cintas de riego, cajas, tarimas y m\u00e1s" },
       { t: "Empresas de factoraje", d: "Necesitan relaciones comerciales activas verificadas" },
     ],
-    how_label: "Cómo Funciona",
+    how_label: "C\u00f3mo Funciona",
     how_h2a: "Explora.",
     how_h2b: "Conecta seguro.",
     steps: [
-      { n: "01", t: "Explora el directorio", d: "Busca por cultivo, región o temporada. Toda la información de producción es visible. El contacto del productor está protegido." },
-      { n: "02", t: "Suscríbete para conectar", d: "Con tu suscripción mensual de $3,000 MXN desbloqueas todos los contactos del directorio. Acceso ilimitado, nuevos productores cada mes." },
-      { n: "03", t: "¿No lo encuentras? Solicitud premium", d: "Si el producto que buscas no está en el directorio, yo lo busco en campo. Viajo, verifico, y te entrego el contacto listo." },
+      { n: "01", t: "Explora el directorio", d: "Busca por cultivo, regi\u00f3n o temporada. Toda la informaci\u00f3n de producci\u00f3n es visible. El contacto del productor est\u00e1 protegido." },
+      { n: "02", t: "Suscr\u00edbete para conectar", d: "Con tu suscripci\u00f3n mensual de $3,000 MXN desbloqueas todos los contactos del directorio. Acceso ilimitado, nuevos productores cada mes." },
+      { n: "03", t: "\u00bfNo lo encuentras? Solicitud premium", d: "Si el producto que buscas no est\u00e1 en el directorio, yo lo busco en campo. Viajo, verifico, y te entrego el contacto listo." },
     ],
     rec: "RECOMENDADO",
     pricing_label: "Acceso",
     pricing_h2a: "Dos formas de",
     pricing_h2b: "conectar",
-    pricing_sub: "Si está en el directorio, desbloquea el contacto. Si no está, lo buscamos en campo.",
+    pricing_sub: "Si est\u00e1 en el directorio, desbloquea el contacto. Si no est\u00e1, lo buscamos en campo.",
     plan_dir_tag: "DIRECTORIO",
-    plan_dir_t: "Suscripción mensual",
-    plan_dir_d: "Acceso ilimitado a todos los contactos verificados del directorio. Nuevos productores se agregan cada mes — tu suscripción vale más con el tiempo.",
+    plan_dir_t: "Suscripci\u00f3n mensual",
+    plan_dir_d: "Acceso ilimitado a todos los contactos verificados del directorio. Nuevos productores se agregan cada mes \u2014 tu suscripci\u00f3n vale m\u00e1s con el tiempo.",
     plan_dir_features: [
-      "Contacto completo: nombre, teléfono, correo, ubicación",
+      "Contacto completo: nombre, tel\u00e9fono, correo, ubicaci\u00f3n",
       "Acceso ilimitado a todos los productores",
       "Nuevos productores verificados cada mes",
-      "Filtros por cultivo, región y temporada",
-      "Videos de verificación en campo",
+      "Filtros por cultivo, regi\u00f3n y temporada",
+      "Videos de verificaci\u00f3n en campo",
     ],
     plan_dir_price: "$3,000 MXN/mes",
     plan_dir_btn: "Solicitar acceso",
-    plan_dir_wa: "Hola, me interesa la suscripción mensual al directorio de Growi.",
+    plan_dir_wa: "Hola, me interesa la suscripci\u00f3n mensual al directorio de Growi.",
     plan_prem_t: "Solicitud premium",
-    plan_prem_d: "¿No encuentras lo que buscas en el directorio? Yo lo busco en campo. Viajo, verifico, y te entrego el contacto listo.",
+    plan_prem_d: "\u00bfNo encuentras lo que buscas en el directorio? Yo lo busco en campo. Viajo, verifico, y te entrego el contacto listo.",
     plan_prem_features: [
-      "Búsqueda personalizada por cultivo y región",
-      "Verificación en campo con evidencia",
+      "B\u00fasqueda personalizada por cultivo y regi\u00f3n",
+      "Verificaci\u00f3n en campo con evidencia",
       "Datos completos del productor",
-      "Introducción facilitada",
-      "Apoyo en negociación + seguimiento 7 días",
+      "Introducci\u00f3n facilitada",
+      "Apoyo en negociaci\u00f3n + seguimiento 7 d\u00edas",
     ],
-    plan_prem_price: "Precio según ubicación y complejidad",
+    plan_prem_price: "Precio seg\u00fan ubicaci\u00f3n y complejidad",
     plan_prem_btn: "Contactar por WhatsApp",
-    plan_prem_wa: "Hola, necesito una solicitud premium. Busco [cultivo] en [región].",
-    why_label: "¿Por Qué Growi?",
+    plan_prem_wa: "Hola, necesito una solicitud premium. Busco [cultivo] en [regi\u00f3n].",
+    why_label: "\u00bfPor Qu\u00e9 Growi?",
     why_h2a: "Cada dato fue recogido ",
     why_h2b: "en persona",
     why_cards: [
       { t: "Verificado en campo", d: "Cada productor fue visitado personalmente. No hay datos inventados ni scrapeados." },
-      { t: "Privacidad total", d: "Números y emails nunca se comparten. Toda la comunicación pasa por Growi." },
-      { t: "Conexión humana", d: "No eres un usuario más. Facilito introducciones personales y acompaño la negociación." },
+      { t: "Privacidad total", d: "N\u00fameros y emails nunca se comparten. Toda la comunicaci\u00f3n pasa por Growi." },
+      { t: "Conexi\u00f3n humana", d: "No eres un usuario m\u00e1s. Facilito introducciones personales y acompa\u00f1o la negociaci\u00f3n." },
     ],
     dir_label: "Directorio",
     dir_h2a: "Explora el directorio.",
     dir_h2b: "Crece cada mes.",
-    dir_sub: "Explora cultivos, regiones y capacidad gratis. El contacto del productor se desbloquea con tu suscripción. ¿No encuentras lo que buscas? Envía una solicitud.",
-    search: "Buscar cultivo, región...",
+    dir_sub: "Explora cultivos, regiones y capacidad gratis. El contacto del productor se desbloquea con tu suscripci\u00f3n. \u00bfNo encuentras lo que buscas? Env\u00eda una solicitud.",
+    search: "Buscar cultivo, regi\u00f3n...",
     filter: "Filtrar",
     results: "productores",
     corridor: "Ensenada - Pescadero",
     clear: "Limpiar filtros",
     no_t: "Sin resultados",
-    no_p: "Intenta con otro cultivo o región",
+    no_p: "Intenta con otro cultivo o regi\u00f3n",
     f_crop: "CULTIVO",
-    f_region: "REGIÓN",
+    f_region: "REGI\u00d3N",
     f_type: "TIPO VENTA",
     f_all_c: "Todos",
     f_all_r: "Todas",
     f_all_t: "Todos",
     f_exp: "Export",
-    f_dom: "Doméstico",
+    f_dom: "Dom\u00e9stico",
     c_cap: "CAPACIDAD",
     c_sea: "TEMPORADA",
-    c_acr: "HECTÁREAS",
-    intro_btn: "Desbloquear contacto — Suscríbete",
+    c_acr: "HECT\u00c1REAS",
+    intro_btn: "Desbloquear contacto \u2014 Suscr\u00edbete",
     wa_intro_msg: "Hola, me interesa suscribirme al directorio de Growi para acceder a los contactos de productores.",
     footer_p: "Datos verificados en campo. Corredor Ensenada - Pescadero.",
     footer_loc: "Baja California, Mexico.",
     footer_q: "El acceso a la red correcta lo cambia todo.",
     // Auth strings
-    login: "Iniciar sesión",
+    login: "Iniciar sesi\u00f3n",
     logout: "Salir",
     subscriber_badge: "SUSCRIPTOR",
     contact_title: "Datos de contacto",
-    contact_phone: "Teléfono",
+    contact_phone: "Tel\u00e9fono",
     contact_office: "Oficina",
     contact_email: "Email",
-    contact_location: "Ubicación",
-    contact_login_prompt: "Inicia sesión para ver contacto",
+    contact_location: "Ubicaci\u00f3n",
+    contact_login_prompt: "Inicia sesi\u00f3n para ver contacto",
   },
   en: {
     nav_cta: "View Producers",
@@ -190,7 +198,7 @@ const TX = {
     pricing_sub: "If it's in the directory, unlock the contact. If not, we find it in the field.",
     plan_dir_tag: "DIRECTORY",
     plan_dir_t: "Monthly subscription",
-    plan_dir_d: "Unlimited access to all verified contacts in the directory. New producers added every month — your subscription grows more valuable over time.",
+    plan_dir_d: "Unlimited access to all verified contacts in the directory. New producers added every month \u2014 your subscription grows more valuable over time.",
     plan_dir_features: [
       "Full contact: name, phone, email, location",
       "Unlimited access to all producers",
@@ -243,7 +251,7 @@ const TX = {
     c_cap: "CAPACITY",
     c_sea: "SEASON",
     c_acr: "ACREAGE",
-    intro_btn: "Unlock contact — Subscribe",
+    intro_btn: "Unlock contact \u2014 Subscribe",
     wa_intro_msg: "Hi, I'm interested in subscribing to the Growi directory to access producer contacts.",
     footer_p: "Field-verified data. Ensenada - Pescadero corridor.",
     footer_loc: "Baja California, Mexico.",
@@ -343,12 +351,12 @@ const ContactInfo = ({ p, t, isSubscriber, user, onLogin, onSubscribe }) => {
     );
   }
 
-  // ✅ SUBSCRIBER — show contact data
+  // \u2705 SUBSCRIBER \u2014 show contact data
   const hasContact = p.phone || p.email || p.exactLocation;
   if (!hasContact) {
     return (
       <div style={{ padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: 'rgba(255,255,255,0.3)', fontFamily: FB, textAlign: 'center' }}>
-        Datos de contacto pendientes de verificación
+        Datos de contacto pendientes de verificaci\u00f3n
       </div>
     );
   }
@@ -362,7 +370,7 @@ const ContactInfo = ({ p, t, isSubscriber, user, onLogin, onSubscribe }) => {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {p.producerName && (
           <div style={{ fontFamily: FB, fontSize: 15, fontWeight: 700, color: '#fff' }}>
-            {p.producerName}{p.ranchName ? ` — ${p.ranchName}` : ''}
+            {p.producerName}{p.ranchName ? ` \u2014 ${p.ranchName}` : ''}
           </div>
         )}
         {p.phone && (
@@ -388,6 +396,34 @@ const ContactInfo = ({ p, t, isSubscriber, user, onLogin, onSubscribe }) => {
             <MapPinIcon size={13} />
             <span style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{p.exactLocation}</span>
           </div>
+        )}
+        {p.secondaryContactName && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <PhoneIcon size={13} />
+            <span style={{ fontFamily: FB, fontSize: 14, color: 'rgba(255,255,255,0.6)' }}>{p.secondaryContactName}{p.secondaryContactPhone ? ` — ${p.secondaryContactPhone}` : ''} <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>(Contacto 2)</span></span>
+          </div>
+        )}
+        {p.packaging && (
+          <div style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>📦 {p.packaging}</div>
+        )}
+        {p.paymentMethods && (
+          <div style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>💳 {p.paymentMethods}</div>
+        )}
+        {p.borderCrossingDistance && (
+          <div style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>🚛 {p.borderCrossingDistance}</div>
+        )}
+        {p.prices && p.prices.length > 0 && (
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8, marginTop: 4 }}>
+            <span style={{ fontFamily: FB, fontSize: 11, fontWeight: 700, color: 'rgba(74,222,128,0.6)', letterSpacing: 1 }}>PRECIOS</span>
+            {p.prices.map((pr, i) => (
+              <div key={i} style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>
+                {pr.crop}: <span style={{ color: '#4ade80' }}>${pr.price_min}{pr.price_max ? ` — $${pr.price_max}` : ''}</span> / {pr.unit}
+              </div>
+            ))}
+          </div>
+        )}
+        {p.photoUrl && (
+          <img src={p.photoUrl} alt="Rancho" style={{ width: '100%', borderRadius: 10, marginTop: 8, maxHeight: 200, objectFit: 'cover' }} />
         )}
         {p.notes && (
           <div style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', marginTop: 4, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8 }}>
@@ -436,7 +472,7 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
           <span key={c} style={{ fontFamily: FB, fontSize: 11, fontWeight: 500, padding: "3px 9px", borderRadius: 5, background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.06)" }}>{c}</span>
         ))}
       </div>
-      {/* Contact section — gated */}
+      {/* Contact section \u2014 gated */}
       <ContactInfo p={p} t={t} isSubscriber={isSubscriber} user={user} onLogin={onLogin} onSubscribe={onSubscribe} />
     </div>
   );
@@ -475,10 +511,10 @@ export default function Growi() {
         setProducers(data.map(normalizeProducer));
       } else {
         // Fallback to static data
-        setProducers(STATIC_PRODUCERS.map(p => ({ ...p, ranchName: null, producerName: null, phone: null, email: null, officePhone: null, exactLocation: null, notes: null, isSubscriber: false })));
+        setProducers(STATIC_PRODUCERS.map(p => ({ ...p, ranchName: null, producerName: null, phone: null, email: null, officePhone: null, exactLocation: null, notes: null, prices: [], photoUrl: null, packaging: null, paymentMethods: null, secondaryContactName: null, secondaryContactPhone: null, borderCrossingDistance: null, isSubscriber: false })));
       }
     } catch {
-      setProducers(STATIC_PRODUCERS.map(p => ({ ...p, ranchName: null, producerName: null, phone: null, email: null, officePhone: null, exactLocation: null, notes: null, isSubscriber: false })));
+      setProducers(STATIC_PRODUCERS.map(p => ({ ...p, ranchName: null, producerName: null, phone: null, email: null, officePhone: null, exactLocation: null, notes: null, prices: [], photoUrl: null, packaging: null, paymentMethods: null, secondaryContactName: null, secondaryContactPhone: null, borderCrossingDistance: null, isSubscriber: false })));
     }
     setProducersLoading(false);
   }
@@ -534,7 +570,7 @@ export default function Growi() {
       {/* Grain overlay */}
       <div style={{ position: "fixed", inset: 0, zIndex: 9999, pointerEvents: "none", opacity: 0.03, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`, backgroundSize: "128px 128px", animation: "grain 8s steps(10) infinite" }} />
 
-      {/* NAV — now with auth */}
+      {/* NAV \u2014 now with auth */}
       <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "20px 32px", background: scrollY > 50 ? "rgba(10,15,10,0.9)" : "transparent", backdropFilter: scrollY > 50 ? "blur(20px)" : "none", transition: "all 0.4s ease", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontFamily: FB, fontSize: 22, fontWeight: 800, color: "#fff", letterSpacing: -0.5 }}>Growi</span>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -599,7 +635,7 @@ export default function Growi() {
         </div>
       </div>
 
-      {/* ¿PARA QUIÉN ES GROWI? */}
+      {/* \u00bfPARA QUI\u00c9N ES GROWI? */}
       <div style={{ padding: "120px 24px", background: "linear-gradient(180deg, transparent 0%, rgba(74,222,128,0.02) 50%, transparent 100%)" }}>
         <div style={{ maxWidth: 700, margin: "0 auto" }}>
           <Section>
@@ -624,7 +660,7 @@ export default function Growi() {
         </div>
       </div>
 
-      {/* CÓMO FUNCIONA */}
+      {/* C\u00d3MO FUNCIONA */}
       <div id="como-funciona" style={{ padding: "120px 24px", background: "linear-gradient(180deg, transparent 0%, rgba(74,222,128,0.03) 50%, transparent 100%)" }}>
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <Section>
@@ -682,7 +718,7 @@ export default function Growi() {
                   <span style={{ fontFamily: F, fontSize: 34, color: "#fff" }}>{t.plan_dir_price}</span>
                 </div>
                 <button onClick={() => setShowSubscribe(true)} style={{ display: "block", textAlign: "center", padding: "14px 24px", borderRadius: 100, background: "#4ade80", color: "#0a0f0a", fontFamily: FB, fontSize: 14, fontWeight: 700, border: "none", cursor: "pointer", width: "100%", marginTop: 12, boxShadow: "0 0 30px rgba(74,222,128,0.25)" }}>
-                  {lang === "es" ? "Suscribirse — Ver Datos de Contacto" : "Subscribe — View Contact Data"}
+                  {lang === "es" ? "Suscribirse \u2014 Ver Datos de Contacto" : "Subscribe \u2014 View Contact Data"}
                 </button>
               </div>
             </Section>
@@ -810,7 +846,7 @@ export default function Growi() {
         </div>
       </div>
 
-      {/* ¿POR QUÉ GROWI? */}
+      {/* \u00bfPOR QU\u00c9 GROWI? */}
       <div style={{ padding: "120px 24px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <Section>
