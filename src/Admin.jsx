@@ -132,7 +132,44 @@ function PrivateFields({ f, setF }) {
     ))}
     <FormInput label="Contacto secundario — Nombre" value={f.secondaryContactName} onChange={e => setF(x => ({ ...x, secondaryContactName: e.target.value }))} placeholder="Ej: Encargado de ventas" />
     <FormInput label="Contacto secundario — Teléfono" value={f.secondaryContactPhone} onChange={e => setF(x => ({ ...x, secondaryContactPhone: e.target.value }))} />
-    <FormInput label="Foto del rancho/producto (URL)" value={f.photoUrl} onChange={e => setF(x => ({ ...x, photoUrl: e.target.value }))} placeholder="https://..." />
+    <div style={s.formRow}>
+      <label style={s.label}>Foto del rancho/producto</label>
+      {f.photoUrl && (
+        <div style={{ marginBottom: 8, position: 'relative' }}>
+          <img src={f.photoUrl} alt="Foto" style={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }} />
+          <button type="button" onClick={() => setF(x => ({ ...x, photoUrl: '' }))} style={{ position: 'absolute', top: 6, right: 6, background: 'rgba(0,0,0,0.7)', color: '#f87171', border: 'none', borderRadius: 100, width: 24, height: 24, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+        </div>
+      )}
+      {f._uploading ? (
+        <div style={{ padding: '12px 16px', borderRadius: 12, background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.2)', fontSize: 13, color: '#4ade80', fontFamily: "'Outfit', sans-serif", textAlign: 'center' }}>Subiendo foto...</div>
+      ) : (
+        <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' }}>
+          📷 {f.photoUrl ? 'Cambiar foto' : 'Subir foto'}
+          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+            const file = e.target.files?.[0];
+            if (!file || !f.id) return;
+            setF(x => ({ ...x, _uploading: true }));
+            try {
+              const fd = new FormData();
+              fd.append('password', 'growi2025admin');
+              fd.append('file', file);
+              fd.append('producer_id', f.id);
+              const res = await fetch('https://ieujjmvwdoqomqyzgaqf.supabase.co/functions/v1/upload-photo', { method: 'POST', body: fd });
+              const json = await res.json();
+              if (json.url) {
+                setF(x => ({ ...x, photoUrl: json.url, _uploading: false }));
+              } else {
+                alert('Error: ' + (json.error || 'Upload failed'));
+                setF(x => ({ ...x, _uploading: false }));
+              }
+            } catch (err) {
+              alert('Error: ' + err.message);
+              setF(x => ({ ...x, _uploading: false }));
+            }
+          }} />
+        </label>
+      )}
+    </div>
     <div style={s.formRow}><label style={s.label}>Notas</label><textarea style={s.textarea} value={f.notes || ''} onChange={e => setF(x => ({ ...x, notes: e.target.value }))} /></div>
   </>)
 }
