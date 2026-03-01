@@ -459,10 +459,17 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
       )}
       {p.prices && p.prices.length > 0 && (
         <div style={{ background: 'rgba(74,222,128,0.04)', border: '1px solid rgba(74,222,128,0.12)', borderRadius: 12, padding: '12px 16px', marginBottom: 14 }}>
-          <span style={{ fontFamily: FB, fontSize: 10, fontWeight: 700, color: 'rgba(74,222,128,0.6)', letterSpacing: 1 }}>PRECIOS</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+            <span style={{ fontFamily: FB, fontSize: 10, fontWeight: 700, color: 'rgba(74,222,128,0.6)', letterSpacing: 1 }}>PRECIOS</span>
+            <span style={{ fontFamily: FB, fontSize: 9, fontWeight: 700, letterSpacing: 1, color: '#0a0f0a', background: '#4ade80', padding: '2px 8px', borderRadius: 100 }}>DIRECTO DE RANCHO</span>
+          </div>
           {p.prices.map((pr, i) => (
-            <div key={i} style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 4 }}>
-              {pr.crop}: <span style={{ color: '#4ade80', fontWeight: 600 }}>${pr.price_min}{pr.price_max ? ` — $${pr.price_max}` : ''}</span> <span style={{ color: 'rgba(255,255,255,0.3)' }}>/ {pr.unit}</span>
+            <div key={i} style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{pr.crop} <span style={{ color: 'rgba(255,255,255,0.3)' }}>/ {pr.unit}</span></span>
+              <span>
+                <span style={{ color: '#4ade80', fontWeight: 600 }}>${pr.price_min} USD</span>
+                {pr.price_mxn && <span style={{ color: 'rgba(255,255,255,0.4)', marginLeft: 8 }}>(${pr.price_mxn} MXN)</span>}
+              </span>
             </div>
           ))}
         </div>
