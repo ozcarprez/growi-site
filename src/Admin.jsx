@@ -71,7 +71,7 @@ const EMPTY_FORM = {
   salesType: 'EXPORT', verified: false, season: '',
   ranchName: '', producerName: '', phone: '', email: '',
   officePhone: '', exactLocation: '', notes: '',
-  prices: [], photoUrl: '', packaging: '', paymentMethods: '',
+  prices: [], photoUrl: '', photos: [], packaging: '', paymentMethods: '',
   secondaryContactName: '', secondaryContactPhone: '', borderCrossingDistance: '',
 }
 
@@ -92,6 +92,7 @@ function producerToForm(p) {
     notes: p.notes || '',
     prices: Array.isArray(p.prices) ? p.prices : [],
     photoUrl: p.photo_url || '',
+    photos: Array.isArray(p.photos) ? p.photos : (p.photo_url ? [p.photo_url] : []),
     packaging: p.packaging || '',
     paymentMethods: p.payment_methods || '',
     secondaryContactName: p.secondary_contact_name || '',
@@ -133,18 +134,25 @@ function PrivateFields({ f, setF }) {
     <FormInput label="Contacto secundario — Nombre" value={f.secondaryContactName} onChange={e => setF(x => ({ ...x, secondaryContactName: e.target.value }))} placeholder="Ej: Encargado de ventas" />
     <FormInput label="Contacto secundario — Teléfono" value={f.secondaryContactPhone} onChange={e => setF(x => ({ ...x, secondaryContactPhone: e.target.value }))} />
     <div style={s.formRow}>
-      <label style={s.label}>Foto del rancho/producto</label>
-      {f.photoUrl && (
-        <div style={{ marginBottom: 8, position: 'relative' }}>
-          <img src={f.photoUrl} alt="Foto" style={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }} />
-          <button type="button" onClick={() => setF(x => ({ ...x, photoUrl: '' }))} style={{ position: 'absolute', top: 6, right: 6, background: 'rgba(0,0,0,0.7)', color: '#f87171', border: 'none', borderRadius: 100, width: 24, height: 24, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+      <label style={s.label}>Fotos del rancho/producto ({(f.photos || []).length})</label>
+      {(f.photos || []).length > 0 && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+          {(f.photos || []).map((url, i) => (
+            <div key={i} style={{ position: 'relative', width: 100, height: 80 }}>
+              <img src={url} alt={`Foto ${i+1}`} style={{ width: 100, height: 80, objectFit: 'cover', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)' }} />
+              <button type="button" onClick={() => {
+                const updated = (f.photos || []).filter((_, idx) => idx !== i);
+                setF(x => ({ ...x, photos: updated, photoUrl: updated[0] || '' }));
+              }} style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(0,0,0,0.7)', color: '#f87171', border: 'none', borderRadius: 100, width: 20, height: 20, fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+            </div>
+          ))}
         </div>
       )}
       {f._uploading ? (
         <div style={{ padding: '12px 16px', borderRadius: 12, background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.2)', fontSize: 13, color: '#4ade80', fontFamily: "'Outfit', sans-serif", textAlign: 'center' }}>Subiendo foto...</div>
       ) : (
         <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' }}>
-          📷 {f.photoUrl ? 'Cambiar foto' : 'Subir foto'}
+          📷 Agregar foto
           <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
             const file = e.target.files?.[0];
             if (!file || !f.id) return;
@@ -156,8 +164,10 @@ function PrivateFields({ f, setF }) {
               fd.append('producer_id', f.id);
               const res = await fetch('https://ieujjmvwdoqomqyzgaqf.supabase.co/functions/v1/upload-photo', { method: 'POST', body: fd });
               const json = await res.json();
-              if (json.url) {
-                setF(x => ({ ...x, photoUrl: json.url, _uploading: false }));
+              if (json.photos) {
+                setF(x => ({ ...x, photos: json.photos, photoUrl: json.photos[0] || '', _uploading: false }));
+              } else if (json.url) {
+                setF(x => ({ ...x, photos: [...(x.photos || []), json.url], photoUrl: x.photoUrl || json.url, _uploading: false }));
               } else {
                 alert('Error: ' + (json.error || 'Upload failed'));
                 setF(x => ({ ...x, _uploading: false }));
@@ -232,7 +242,8 @@ function formToPayload(form) {
     exact_location: form.exactLocation,
     notes: form.notes,
     prices: form.prices || [],
-    photo_url: form.photoUrl || null,
+    photo_url: form.photos?.[0] || form.photoUrl || null,
+    photos: form.photos || [],
     packaging: form.packaging || null,
     payment_methods: form.paymentMethods || null,
     secondary_contact_name: form.secondaryContactName || null,
