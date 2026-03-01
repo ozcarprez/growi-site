@@ -178,7 +178,7 @@ function CommercialFields({ f, setF }) {
   const prices = f.prices || []
 
   function addPrice() {
-    setF(x => ({ ...x, prices: [...(x.prices || []), { crop: '', unit: 'Caja', price_min: '', price_max: '' }] }))
+    setF(x => ({ ...x, prices: [...(x.prices || []), { crop: '', unit: 'Caja', price_min: '', price_max: '', price_mxn: '' }] }))
   }
   function updatePrice(i, field, val) {
     setF(x => {
@@ -201,8 +201,8 @@ function CommercialFields({ f, setF }) {
         <div key={i} style={s.priceRow}>
           <div><span style={s.labelSm}>Cultivo</span><input style={s.inputSm} value={pr.crop || ''} onChange={e => updatePrice(i, 'crop', e.target.value)} placeholder="Ej: Red Beet" /></div>
           <div><span style={s.labelSm}>Unidad</span><input style={s.inputSm} value={pr.unit || ''} onChange={e => updatePrice(i, 'unit', e.target.value)} placeholder="Caja/Saco" /></div>
-          <div><span style={s.labelSm}>Precio mín</span><input style={s.inputSm} value={pr.price_min || ''} onChange={e => updatePrice(i, 'price_min', e.target.value)} placeholder="$" /></div>
-          <div><span style={s.labelSm}>Precio máx</span><input style={s.inputSm} value={pr.price_max || ''} onChange={e => updatePrice(i, 'price_max', e.target.value)} placeholder="$" /></div>
+          <div><span style={s.labelSm}>USD</span><input style={s.inputSm} value={pr.price_min || ''} onChange={e => updatePrice(i, 'price_min', e.target.value)} placeholder="$USD" /></div>
+          <div><span style={s.labelSm}>MXN</span><input style={s.inputSm} value={pr.price_mxn || ''} onChange={e => updatePrice(i, 'price_mxn', e.target.value)} placeholder="$MXN" /></div>
           <button type="button" style={{ ...s.btnSmDanger, alignSelf: 'end', marginBottom: 2 }} onClick={() => removePrice(i)}>✕</button>
         </div>
       ))}
