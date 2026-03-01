@@ -419,7 +419,11 @@ const ContactInfo = ({ p, t, isSubscriber, user, onLogin, onSubscribe }) => {
 const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin, onSubscribe }) => {
   const isExport = p.salesType === "EXPORT";
   return (
-    <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 20, border: "1px solid rgba(255,255,255,0.08)", padding: "24px 22px", marginBottom: 16, opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: `all 0.5s ease ${delay}s` }}>
+    <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 20, border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 16, opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: `all 0.5s ease ${delay}s` }}>
+      {p.photoUrl && (
+        <img src={p.photoUrl} alt="Rancho" style={{ width: '100%', height: 260, objectFit: 'cover', display: 'block' }} />
+      )}
+      <div style={{ padding: "24px 22px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: FB, fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.5)", letterSpacing: 0.3 }}>
@@ -455,9 +459,6 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
         ))}
       </div>
       {/* Public commercial data — visible to everyone */}
-      {p.photoUrl && (
-        <img src={p.photoUrl} alt="Rancho" style={{ width: '100%', borderRadius: 12, marginBottom: 14, maxHeight: 220, objectFit: 'cover', border: '1px solid rgba(255,255,255,0.06)' }} />
-      )}
       {/* Prices — subscribers see data, others see teaser */}
       {p.prices && p.prices.length > 0 ? (
         <div style={{ background: 'rgba(74,222,128,0.04)', border: '1px solid rgba(74,222,128,0.12)', borderRadius: 12, padding: '12px 16px', marginBottom: 14 }}>
@@ -492,6 +493,7 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
       )}
       {/* Contact section — gated */}
       <ContactInfo p={p} t={t} isSubscriber={isSubscriber} user={user} onLogin={onLogin} onSubscribe={onSubscribe} />
+      </div>
     </div>
   );
 };
