@@ -423,6 +423,7 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: FB, fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.5)", letterSpacing: 0.3 }}>
+            <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, color: "#4ade80", marginRight: 8 }}>{p.id}</span>
             {lang === "es" ? "Productor verificado" : "Verified producer"}
           </span>
           {p.verified && <ShieldCheck size={18} />}
