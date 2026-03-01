@@ -447,8 +447,14 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
           <span key={c} style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, padding: "5px 12px", borderRadius: 8, background: "rgba(74,222,128,0.08)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.15)" }}>{c}</span>
         ))}
       </div>
-      <div style={{ display: "flex", gap: 24, marginBottom: 16 }}>
-        {[{ l: t.c_cap, v: p.capacity }, { l: t.c_sea, v: p.season }, { l: t.c_acr, v: p.acreage }].map((s) => (
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 24, marginBottom: 16 }}>
+        {[
+          { l: t.c_cap, v: p.capacity },
+          { l: t.c_sea, v: p.season },
+          { l: t.c_acr, v: p.acreage },
+          ...(p.packaging ? [{ l: lang === "es" ? "EMPAQUE" : "PACKAGING", v: p.packaging }] : []),
+          ...(p.borderCrossingDistance ? [{ l: lang === "es" ? "CRUCE FRONTERIZO" : "BORDER CROSSING", v: p.borderCrossingDistance }] : []),
+        ].filter(s => s.v).map((s) => (
           <div key={s.l}>
             <span style={{ fontFamily: FB, fontSize: 10, fontWeight: 700, color: "rgba(74,222,128,0.6)", letterSpacing: 1 }}>{s.l}</span>
             <p style={{ fontFamily: FB, fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.8)", margin: "4px 0 0" }}>{s.v}</p>
@@ -481,16 +487,6 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
       ) : (
         <div style={{ background: 'rgba(74,222,128,0.03)', border: '1px dashed rgba(74,222,128,0.15)', borderRadius: 12, padding: '14px 16px', marginBottom: 14, textAlign: 'center' }}>
           <span style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(74,222,128,0.7)' }}>Precios del cultivo disponibles con tu suscripción</span>
-        </div>
-      )}
-      {(p.packaging || p.borderCrossingDistance) && (
-        <div style={{ display: 'flex', gap: 16, marginBottom: 14, flexWrap: 'wrap' }}>
-          {p.packaging && (
-            <div style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>📦 {p.packaging}</div>
-          )}
-          {p.borderCrossingDistance && (
-            <div style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>🚛 {p.borderCrossingDistance}</div>
-          )}
         </div>
       )}
       {/* Contact section — gated */}
