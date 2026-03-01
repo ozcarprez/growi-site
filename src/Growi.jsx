@@ -123,7 +123,7 @@ const TX = {
     why_h2b: "en persona",
     why_cards: [
       { t: "Verificado en campo", d: "Cada productor fue visitado personalmente. No hay datos inventados ni scrapeados." },
-      { t: "Privacidad total", d: "N\u00fameros y emails nunca se comparten. Toda la comunicaci\u00f3n pasa por Growi." },
+      { t: "Precios directos", d: "Accede a precios actualizados directo del productor. Sin intermediarios, sin comisiones." },
       { t: "Conexi\u00f3n humana", d: "No eres un usuario m\u00e1s. Facilito introducciones personales y acompa\u00f1o la negociaci\u00f3n." },
     ],
     dir_label: "Directorio",
@@ -228,7 +228,7 @@ const TX = {
     why_h2b: "in person",
     why_cards: [
       { t: "Field-verified", d: "Every producer was visited personally. No fabricated or scraped data." },
-      { t: "Total privacy", d: "Phone numbers and emails are never shared. All communication goes through Growi." },
+      { t: "Direct pricing", d: "Access updated prices straight from the producer. No middlemen, no commissions." },
       { t: "Human connection", d: "You are not just another user. I facilitate personal introductions and support negotiations." },
     ],
     dir_label: "Directory",
@@ -320,7 +320,8 @@ const ShieldIcon24 = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill
 const LockIcon24 = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>);
 const UserIcon24 = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="8.5" cy="7" r="4" /><polyline points="17 11 19 13 23 9" /></svg>);
 const LayersIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>);
-const WHY_ICONS = [<ShieldIcon24 key="s" />, <LockIcon24 key="l" />, <UserIcon24 key="u" />];
+const TagIcon24 = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>);
+const WHY_ICONS = [<ShieldIcon24 key="s" />, <TagIcon24 key="t" />, <UserIcon24 key="u" />];
 const CheckSm = () => (<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>);
 const PhoneIcon = ({ size = 14 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>);
 const MailIcon = ({ size = 14 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>);
