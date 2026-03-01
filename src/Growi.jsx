@@ -457,7 +457,8 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
       {p.photoUrl && (
         <img src={p.photoUrl} alt="Rancho" style={{ width: '100%', borderRadius: 12, marginBottom: 14, maxHeight: 220, objectFit: 'cover', border: '1px solid rgba(255,255,255,0.06)' }} />
       )}
-      {p.prices && p.prices.length > 0 && (
+      {/* Prices — subscribers see data, others see teaser */}
+      {p.prices && p.prices.length > 0 ? (
         <div style={{ background: 'rgba(74,222,128,0.04)', border: '1px solid rgba(74,222,128,0.12)', borderRadius: 12, padding: '12px 16px', marginBottom: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
             <span style={{ fontFamily: FB, fontSize: 10, fontWeight: 700, color: 'rgba(74,222,128,0.6)', letterSpacing: 1 }}>PRECIOS</span>
@@ -472,6 +473,10 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
               </span>
             </div>
           ))}
+        </div>
+      ) : !isSubscriber && (
+        <div style={{ background: 'rgba(74,222,128,0.03)', border: '1px dashed rgba(74,222,128,0.15)', borderRadius: 12, padding: '14px 16px', marginBottom: 14, textAlign: 'center' }}>
+          <span style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(74,222,128,0.7)' }}>💰 Precios directos de rancho disponibles con tu suscripción</span>
         </div>
       )}
       {(p.packaging || p.borderCrossingDistance) && (
