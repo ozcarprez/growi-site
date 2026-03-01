@@ -477,7 +477,7 @@ const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin,
         </div>
       ) : (
         <div style={{ background: 'rgba(74,222,128,0.03)', border: '1px dashed rgba(74,222,128,0.15)', borderRadius: 12, padding: '14px 16px', marginBottom: 14, textAlign: 'center' }}>
-          <span style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(74,222,128,0.7)' }}>💰 Precios directos de rancho disponibles con tu suscripción</span>
+          <span style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: 'rgba(74,222,128,0.7)' }}>Precios del cultivo disponibles con tu suscripción</span>
         </div>
       )}
       {(p.packaging || p.borderCrossingDistance) && (
