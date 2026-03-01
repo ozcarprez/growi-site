@@ -49,6 +49,7 @@ function normalizeProducer(p) {
     // New commercial fields
     prices: Array.isArray(p.prices) ? p.prices : [],
     photoUrl: p.photo_url || null,
+    photos: Array.isArray(p.photos) ? p.photos.filter(Boolean) : (p.photo_url ? [p.photo_url] : []),
     packaging: p.packaging || null,
     paymentMethods: p.payment_methods || null,
     secondaryContactName: p.secondary_contact_name || null,
@@ -419,11 +420,29 @@ const ContactInfo = ({ p, t, isSubscriber, user, onLogin, onSubscribe }) => {
 };
 
 const ProducerCard = ({ p, t, lang, delay, visible, isSubscriber, user, onLogin, onSubscribe }) => {
+  const [photoIdx, setPhotoIdx] = useState(0);
+  const photos = p.photos && p.photos.length > 0 ? p.photos : (p.photoUrl ? [p.photoUrl] : []);
   const isExport = p.salesType === "EXPORT";
   return (
     <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 20, border: "1px solid rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 16, opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: `all 0.5s ease ${delay}s` }}>
-      {p.photoUrl && (
-        <img src={p.photoUrl} alt="Rancho" style={{ width: '100%', height: 260, objectFit: 'cover', display: 'block' }} />
+      {photos.length > 0 && (
+        <div style={{ position: 'relative' }}>
+          <img src={photos[photoIdx]} alt="Rancho" style={{ width: '100%', height: 260, objectFit: 'cover', display: 'block', transition: 'opacity 0.3s ease' }} />
+          {photos.length > 1 && (
+            <>
+              <button onClick={(e) => { e.stopPropagation(); setPhotoIdx(i => (i - 1 + photos.length) % photos.length); }} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: '50%', width: 32, height: 32, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
+              <button onClick={(e) => { e.stopPropagation(); setPhotoIdx(i => (i + 1) % photos.length); }} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: '50%', width: 32, height: 32, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
+              <div style={{ position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6 }}>
+                {photos.map((_, i) => (
+                  <button key={i} onClick={(e) => { e.stopPropagation(); setPhotoIdx(i); }} style={{ width: i === photoIdx ? 16 : 6, height: 6, borderRadius: 3, background: i === photoIdx ? '#4ade80' : 'rgba(255,255,255,0.4)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0 }} />
+                ))}
+              </div>
+            </>
+          )}
+          {photos.length > 1 && (
+            <span style={{ position: 'absolute', top: 8, right: 8, fontFamily: FB, fontSize: 11, fontWeight: 600, color: '#fff', background: 'rgba(0,0,0,0.5)', padding: '3px 8px', borderRadius: 6 }}>{photoIdx + 1}/{photos.length}</span>
+          )}
+        </div>
       )}
       <div style={{ padding: "24px 22px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
