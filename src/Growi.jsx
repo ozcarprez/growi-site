@@ -156,6 +156,7 @@ const TX = {
     login: "Iniciar sesi\u00f3n",
     logout: "Salir",
     subscriber_badge: "SUSCRIPTOR",
+    manage_sub: "Mi suscripción",
     contact_title: "Datos de contacto",
     contact_phone: "Tel\u00e9fono",
     contact_office: "Oficina",
@@ -260,6 +261,7 @@ const TX = {
     login: "Sign in",
     logout: "Sign out",
     subscriber_badge: "SUBSCRIBER",
+    manage_sub: "My subscription",
     contact_title: "Contact info",
     contact_phone: "Phone",
     contact_office: "Office",
@@ -600,9 +602,21 @@ export default function Growi() {
             /* Logged in */
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               {isSubscriber && (
-                <span style={{ fontFamily: FB, fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: '#0a0f0a', background: '#4ade80', padding: '4px 10px', borderRadius: 100 }}>
-                  {t.subscriber_badge}
-                </span>
+                <button onClick={async () => {
+                  try {
+                    const { data: { session } } = await (await import('./supabaseClient')).supabase.auth.getSession();
+                    const res = await fetch('https://ieujjmvwdoqomqyzgaqf.supabase.co/functions/v1/customer-portal', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
+                      body: JSON.stringify({ return_url: window.location.href }),
+                    });
+                    const data = await res.json();
+                    if (data.url) window.location.href = data.url;
+                    else alert(data.error || 'Error');
+                  } catch (e) { alert('Error: ' + e.message); }
+                }} style={{ fontFamily: FB, fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: '#0a0f0a', background: '#4ade80', padding: '4px 10px', borderRadius: 100, border: 'none', cursor: 'pointer' }}>
+                  {t.manage_sub}
+                </button>
               )}
               <span style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.4)', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.user_metadata?.full_name || user.email}
