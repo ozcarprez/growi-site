@@ -84,7 +84,7 @@ const TX = {
     how_h2b: "Conecta seguro.",
     steps: [
       { n: "01", t: "Explora el directorio", d: "Busca por cultivo, regi\u00f3n o temporada. Toda la informaci\u00f3n de producci\u00f3n es visible. El contacto del productor est\u00e1 protegido." },
-      { n: "02", t: "Suscr\u00edbete para conectar", d: "Con tu suscripci\u00f3n mensual de $3,000 MXN desbloqueas todos los contactos del directorio. Acceso ilimitado, nuevos productores cada mes." },
+      { n: "02", t: "Suscr\u00edbete para conectar", d: "Con tu suscripci\u00f3n mensual de $3,000 MXN desbloqueas todos los contactos y precios del directorio. Acceso ilimitado, nuevos productores cada mes." },
       { n: "03", t: "\u00bfNo lo encuentras? Solicitud premium", d: "Si el producto que buscas no est\u00e1 en el directorio, yo lo busco en campo. Viajo, verifico, y te entrego el contacto listo." },
     ],
     rec: "RECOMENDADO",
@@ -188,7 +188,7 @@ const TX = {
     how_h2b: "Connect safely.",
     steps: [
       { n: "01", t: "Explore the directory", d: "Search by crop, region or season. All production info is visible. Producer contact is protected." },
-      { n: "02", t: "Subscribe to connect", d: "With your $3,000 MXN monthly subscription you unlock all directory contacts. Unlimited access, new producers every month." },
+      { n: "02", t: "Subscribe to connect", d: "With your $3,000 MXN monthly subscription you unlock all contacts and pricing in the directory. Unlimited access, new producers every month." },
       { n: "03", t: "Can't find it? Premium request", d: "If the product you need isn't in the directory, I'll find it in the field. I travel, verify, and deliver the contact ready." },
     ],
     rec: "RECOMMENDED",
