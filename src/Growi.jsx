@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import ConnectionRequestModal from './ConnectionRequestModal';
+import SearchRequestModal from './SearchRequestModal';
 import { supabase } from './supabaseClient';
 
 const F = "'Instrument Serif', serif";
@@ -56,7 +57,7 @@ const TX={
     plan_features:["Introducción personal con el productor","Verificación de disponibilidad y precios","Apoyo en la negociación inicial","Seguimiento por 7 días","Sin compromisos ni suscripciones"],
     plan_price:"$5,000 MXN",plan_price_sub:"por conexión",plan_btn:"Solicitar conexión",
     plan_alt_title:"¿Buscas algo específico?",plan_alt_desc:"Si el producto que buscas no está en el directorio, lo busco en campo.",
-    plan_alt_btn:"Contactar por WhatsApp",plan_alt_wa:"Hola, busco un productor de [cultivo] en [región].",
+    plan_alt_btn:"Solicitar búsqueda",plan_alt_wa:"Hola, busco un productor de [cultivo] en [región].",
     why_label:"¿Por Qué Growi?",why_h2a:"Cada dato fue recogido ",why_h2b:"en persona",
     why_cards:[{t:"Verificado en campo",d:"Cada productor fue visitado personalmente. No hay datos inventados."},{t:"Precios directos de rancho",d:"Ves los precios reales del productor. Sin intermediarios."},{t:"Conexión humana",d:"No eres un usuario más. Te conecto personalmente y acompaño la negociación."}],
     dir_label:"Directorio",dir_h2a:"Explora el directorio.",dir_h2b:"Crece cada mes.",
@@ -84,7 +85,7 @@ const TX={
     plan_features:["Personal introduction with the producer","Availability and pricing verification","Support in initial negotiation","7-day follow-up","No commitments or subscriptions"],
     plan_price:"$5,000 MXN",plan_price_sub:"per connection",plan_btn:"Request connection",
     plan_alt_title:"Looking for something specific?",plan_alt_desc:"If the product you need isn't in the directory, I'll find it in the field.",
-    plan_alt_btn:"Contact via WhatsApp",plan_alt_wa:"Hi, I'm looking for a producer of [crop] in [region].",
+    plan_alt_btn:"Request a search",plan_alt_wa:"Hi, I'm looking for a producer of [crop] in [region].",
     why_label:"Why Growi?",why_h2a:"Every data point was collected ",why_h2b:"in person",
     why_cards:[{t:"Field-verified",d:"Every producer was visited personally. No fabricated data."},{t:"Direct ranch pricing",d:"See real producer prices. No middlemen."},{t:"Human connection",d:"You're not just another user. I personally connect you and support the negotiation."}],
     dir_label:"Directory",dir_h2a:"Explore the directory.",dir_h2b:"Grows every month.",
@@ -151,7 +152,7 @@ const ProducerCard=({p,t,lang,delay,visible,onRequest})=>{
 export default function Growi(){
   const[lang,setLang]=useState("es");const[loaded,setLoaded]=useState(false);const[scrollY,setScrollY]=useState(0);
   const[searchQ,setSearchQ]=useState("");const[selCrop,setSelCrop]=useState("");const[selRegion,setSelRegion]=useState("");const[selType,setSelType]=useState("");
-  const[showFilters,setShowFilters]=useState(false);const[showConn,setShowConn]=useState(false);const[selProd,setSelProd]=useState(null);
+  const[showFilters,setShowFilters]=useState(false);const[showConn,setShowConn]=useState(false);const[selProd,setSelProd]=useState(null);const[showSearch,setShowSearch]=useState(false);
   const[producers,setProducers]=useState([]);const[loading,setLoading]=useState(true);const[dirVis,setDirVis]=useState(false);
   const dirRef=useRef(null);const t=TX[lang];
 
@@ -240,7 +241,7 @@ export default function Growi(){
             <Section delay={0.2}><div style={{padding:"36px 28px",borderRadius:20,border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.02)",height:"100%",display:"flex",flexDirection:"column"}}>
               <h3 style={{fontFamily:FB,fontSize:20,fontWeight:700,color:"#fff",margin:"0 0 14px"}}>{t.plan_alt_title}</h3>
               <p style={{fontFamily:FB,fontSize:14,fontWeight:300,color:"rgba(255,255,255,0.45)",lineHeight:1.7,margin:"0 0 24px",flex:1}}>{t.plan_alt_desc}</p>
-              <a href={waLink(t.plan_alt_wa)} target="_blank" rel="noopener noreferrer" style={{display:"block",textAlign:"center",padding:"14px 24px",borderRadius:100,border:"1px solid rgba(255,255,255,0.15)",color:"rgba(255,255,255,0.7)",fontFamily:FB,fontSize:14,fontWeight:600,marginTop:"auto"}}>{t.plan_alt_btn}</a>
+              <button onClick={()=>setShowSearch(true)} style={{display:"block",width:"100%",textAlign:"center",padding:"14px 24px",borderRadius:100,border:"1px solid rgba(255,255,255,0.15)",color:"rgba(255,255,255,0.7)",fontFamily:FB,fontSize:14,fontWeight:600,marginTop:"auto",background:"transparent",cursor:"pointer"}}>{t.plan_alt_btn}</button>
             </div></Section>
           </div>
         </div>
@@ -289,6 +290,7 @@ export default function Growi(){
       </footer>
 
       <ConnectionRequestModal isOpen={showConn} onClose={()=>{setShowConn(false);setSelProd(null)}} producer={selProd} lang={lang}/>
+      <SearchRequestModal isOpen={showSearch} onClose={()=>setShowSearch(false)} lang={lang}/>
     </div>
   );
 }
