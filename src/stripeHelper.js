@@ -1,10 +1,10 @@
 const SUPABASE_FUNCTIONS_URL = 'https://ieujjmvwdoqomqyzgaqf.supabase.co/functions/v1';
 
-export async function startCheckout({ email, company_name, phone }) {
-  const res = await fetch(`${SUPABASE_FUNCTIONS_URL}/create-checkout`, {
+export async function startConnectionCheckout(requestData) {
+  const res = await fetch(`${SUPABASE_FUNCTIONS_URL}/create-connection-checkout`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, company_name, phone }),
+    body: JSON.stringify(requestData),
   });
 
   const data = await res.json();
@@ -14,14 +14,4 @@ export async function startCheckout({ email, company_name, phone }) {
   }
 
   window.location.href = data.url;
-}
-
-export async function checkSubscription(email) {
-  const res = await fetch(`${SUPABASE_FUNCTIONS_URL}/check-subscription`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email }),
-  });
-
-  return await res.json();
 }
