@@ -3,6 +3,15 @@ import { useState } from 'react';
 const FB = "'Outfit', sans-serif";
 const API = 'https://ieujjmvwdoqomqyzgaqf.supabase.co/functions/v1';
 
+const _inputStyle = { width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 14, color: '#fff', outline: 'none', boxSizing: 'border-box', fontFamily: FB };
+
+const Field = ({ label, children }) => (
+  <div style={{ marginBottom: 14 }}>
+    <label style={{ display: 'block', fontFamily: FB, fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginBottom: 6 }}>{label}</label>
+    {children}
+  </div>
+);
+
 export default function ConnectionRequestModal({ isOpen, onClose, producer, lang = 'es' }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -59,14 +68,7 @@ export default function ConnectionRequestModal({ isOpen, onClose, producer, lang
     } catch (err) { setError(err.message); setLoading(false); }
   }
 
-  const Field = ({ label, children }) => (
-    <div style={{ marginBottom: 14 }}>
-      <label style={{ display: 'block', fontFamily: FB, fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginBottom: 6 }}>{label}</label>
-      {children}
-    </div>
-  );
-
-  const inputStyle = { width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 14, color: '#fff', outline: 'none', boxSizing: 'border-box', fontFamily: FB };
+  const inputSt = _inputStyle;
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}>
@@ -110,10 +112,10 @@ export default function ConnectionRequestModal({ isOpen, onClose, producer, lang
         {/* Step 1 */}
         {step === 1 && (<div>
           <h3 style={{ fontFamily: FB, fontSize: 18, fontWeight: 700, color: '#fff', margin: '0 0 16px' }}>{es ? 'Tus datos' : 'Your info'}</h3>
-          <Field label={es ? 'Nombre completo *' : 'Full name *'}><input style={inputStyle} value={buyerName} onChange={e => setBuyerName(e.target.value)} placeholder={es ? 'Tu nombre' : 'Your name'} /></Field>
-          <Field label="Email *"><input style={inputStyle} type="email" value={buyerEmail} onChange={e => setBuyerEmail(e.target.value)} placeholder="email@empresa.com" /></Field>
-          <Field label={es ? 'Teléfono *' : 'Phone *'}><input style={inputStyle} type="tel" value={buyerPhone} onChange={e => setBuyerPhone(e.target.value)} placeholder="+52 664 123 4567" /></Field>
-          <Field label={es ? 'Empresa (opcional)' : 'Company (optional)'}><input style={inputStyle} value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder={es ? 'Nombre de tu empresa' : 'Company name'} /></Field>
+          <Field label={es ? 'Nombre completo *' : 'Full name *'}><input style={inputSt} value={buyerName} onChange={e => setBuyerName(e.target.value)} placeholder={es ? 'Tu nombre' : 'Your name'} /></Field>
+          <Field label="Email *"><input style={inputSt} type="email" value={buyerEmail} onChange={e => setBuyerEmail(e.target.value)} placeholder="email@empresa.com" /></Field>
+          <Field label={es ? 'Teléfono *' : 'Phone *'}><input style={inputSt} type="tel" value={buyerPhone} onChange={e => setBuyerPhone(e.target.value)} placeholder="+52 664 123 4567" /></Field>
+          <Field label={es ? 'Empresa (opcional)' : 'Company (optional)'}><input style={inputSt} value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder={es ? 'Nombre de tu empresa' : 'Company name'} /></Field>
           <button onClick={goStep2} style={{ width: '100%', padding: 14, border: 'none', borderRadius: 100, background: '#4ade80', color: '#0a0f0a', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: FB }}>{es ? 'Siguiente →' : 'Next →'}</button>
         </div>)}
 
@@ -121,16 +123,16 @@ export default function ConnectionRequestModal({ isOpen, onClose, producer, lang
         {step === 2 && (<div>
           <h3 style={{ fontFamily: FB, fontSize: 18, fontWeight: 700, color: '#fff', margin: '0 0 16px' }}>{es ? '¿Qué buscas?' : 'What are you looking for?'}</h3>
           <Field label={es ? '¿Qué cultivo te interesa? *' : 'Which crop? *'}>
-            <select style={{ ...inputStyle, appearance: 'none' }} value={cropInterest} onChange={e => setCropInterest(e.target.value)}>
+            <select style={{ ...inputSt, appearance: 'none' }} value={cropInterest} onChange={e => setCropInterest(e.target.value)}>
               <option value="" style={{ background: '#1a1a1a' }}>{es ? 'Selecciona...' : 'Select...'}</option>
               {producer.crops.map(c => <option key={c} value={c} style={{ background: '#1a1a1a' }}>{c}</option>)}
               <option value="multiple" style={{ background: '#1a1a1a' }}>{es ? 'Varios cultivos' : 'Multiple crops'}</option>
               <option value="other" style={{ background: '#1a1a1a' }}>{es ? 'Otro' : 'Other'}</option>
             </select>
           </Field>
-          <Field label={es ? 'Volumen que necesitas *' : 'Volume needed *'}><input style={inputStyle} value={volume} onChange={e => setVolume(e.target.value)} placeholder={es ? 'Ej: 5 pallets semanales' : 'E.g. 5 pallets weekly'} /></Field>
+          <Field label={es ? 'Volumen que necesitas *' : 'Volume needed *'}><input style={inputSt} value={volume} onChange={e => setVolume(e.target.value)} placeholder={es ? 'Ej: 5 pallets semanales' : 'E.g. 5 pallets weekly'} /></Field>
           <Field label={es ? '¿Para cuándo?' : 'When?'}>
-            <select style={{ ...inputStyle, appearance: 'none' }} value={timeline} onChange={e => setTimeline(e.target.value)}>
+            <select style={{ ...inputSt, appearance: 'none' }} value={timeline} onChange={e => setTimeline(e.target.value)}>
               <option value="" style={{ background: '#1a1a1a' }}>{es ? 'Selecciona...' : 'Select...'}</option>
               {timelineOpts.map(o => <option key={o} value={o} style={{ background: '#1a1a1a' }}>{o}</option>)}
             </select>
@@ -142,7 +144,7 @@ export default function ConnectionRequestModal({ isOpen, onClose, producer, lang
               ))}
             </div>
           </Field>
-          <Field label={es ? 'Notas adicionales' : 'Additional notes'}><textarea style={{ ...inputStyle, resize: 'vertical' }} value={notes} onChange={e => setNotes(e.target.value)} placeholder={es ? 'Especificaciones, certificaciones...' : 'Specifications, certifications...'} rows={3} /></Field>
+          <Field label={es ? 'Notas adicionales' : 'Additional notes'}><textarea style={{ ...inputSt, resize: 'vertical' }} value={notes} onChange={e => setNotes(e.target.value)} placeholder={es ? 'Especificaciones, certificaciones...' : 'Specifications, certifications...'} rows={3} /></Field>
 
           {/* Price summary */}
           <div style={{ background: 'rgba(74,222,128,0.04)', border: '1px solid rgba(74,222,128,0.15)', borderRadius: 14, padding: '16px 18px', marginBottom: 16 }}>
