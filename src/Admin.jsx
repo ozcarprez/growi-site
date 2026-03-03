@@ -71,6 +71,7 @@ export default function Admin() {
   const [tab, setTab] = useState('producers')
   const [producers, setProducers] = useState([])
   const [connections, setConnections] = useState([])
+  const [searches, setSearches] = useState([])
   const [loading, setLoading] = useState(false)
   const [editProd, setEditProd] = useState(null) // null=closed, 'new'=new, object=editing
   const [viewConn, setViewConn] = useState(null)
@@ -86,9 +87,10 @@ export default function Admin() {
   async function loadAll() {
     setLoading(true)
     try {
-      const [prod, conn] = await Promise.all([af('select', 'producers'), af('select', 'connection_requests')])
+      const [prod, conn, srch] = await Promise.all([af('select', 'producers'), af('select', 'connection_requests'), af('select', 'search_requests')])
       setProducers((prod || []).sort((a, b) => (a.id || '').localeCompare(b.id || '')))
       setConnections((conn || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)))
+      setSearches((srch || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)))
     } catch (err) { showToast('Error: ' + err.message, 'err') }
     setLoading(false)
   }
@@ -221,16 +223,17 @@ export default function Admin() {
       <div style={S.main}>
         {/* Stats */}
         <div style={S.statRow}>
-          <div style={S.stat}><div style={S.statN}>{totalConn}</div><div style={S.statL}>Solicitudes</div></div>
+          <div style={S.stat}><div style={S.statN}>{totalConn}</div><div style={S.statL}>Conexiones</div></div>
           <div style={S.stat}><div style={S.statN}>{paidConn}</div><div style={S.statL}>Pagadas</div></div>
-          <div style={S.stat}><div style={S.statN}>{pendingConn}</div><div style={S.statL}>Por atender</div></div>
+          <div style={S.stat}><div style={S.statN}>{searches.length}</div><div style={S.statL}>Búsquedas</div></div>
           <div style={S.stat}><div style={S.statN}>{totalProd}</div><div style={S.statL}>Productores</div></div>
         </div>
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 24, alignItems: 'center' }}>
           <button style={S.tab(tab === 'producers')} onClick={() => setTab('producers')}>Productores</button>
-          <button style={S.tab(tab === 'connections')} onClick={() => setTab('connections')}>Solicitudes</button>
+          <button style={S.tab(tab === 'connections')} onClick={() => setTab('connections')}>Conexiones</button>
+          <button style={S.tab(tab === 'searches')} onClick={() => setTab('searches')}>Búsquedas</button>
           {tab === 'producers' && <button style={{ ...S.btnSm, marginLeft: 'auto' }} onClick={openNew}>+ Agregar productor</button>}
         </div>
 
@@ -271,6 +274,43 @@ export default function Admin() {
                     <td style={S.td}>{c.crop_interest || '—'}</td>
                     <td style={S.td}><span style={S.badge(c.payment_status === 'paid')}>{c.payment_status === 'paid' ? 'Pagado' : 'Pendiente'}</span></td>
                     <td style={S.td}><span style={S.sBadge(c.status)}>{c.status || 'pending'}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* SEARCHES TAB */}
+        {tab === 'searches' && (
+          <div style={S.card}>
+            <table style={S.table}>
+              <thead><tr><th style={S.th}>Fecha</th><th style={S.th}>Nombre</th><th style={S.th}>Contacto</th><th style={S.th}>Cultivo</th><th style={S.th}>Volumen</th><th style={S.th}>Región</th><th style={S.th}>Estado</th></tr></thead>
+              <tbody>
+                {searches.length === 0 && !loading && <tr><td colSpan={7} style={{ ...S.td, color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: 32 }}>Sin búsquedas</td></tr>}
+                {searches.map(s => (
+                  <tr key={s.id} style={S.row} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    <td style={S.td}><span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{s.created_at ? new Date(s.created_at).toLocaleDateString('es-MX') : '—'}</span></td>
+                    <td style={S.td}><strong>{s.name || '—'}</strong></td>
+                    <td style={S.td}>
+                      {s.phone && <div><a href={`https://wa.me/${s.phone.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#4ade80', fontSize: 13 }}>📱 {s.phone}</a></div>}
+                      {s.email && <div><a href={`mailto:${s.email}`} style={{ color: '#4ade80', fontSize: 12 }}>{s.email}</a></div>}
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Prefiere: {s.contact_preference || 'whatsapp'}</span>
+                    </td>
+                    <td style={S.td}><span style={{ color: '#4ade80', fontWeight: 600 }}>{s.crop_interest || '—'}</span></td>
+                    <td style={S.td}>{s.volume || '—'}</td>
+                    <td style={S.td}>{s.region_preference || '—'}</td>
+                    <td style={S.td}>
+                      <select value={s.status || 'new'} onChange={async (e) => {
+                        try { await af('update', 'search_requests', { id: s.id, data: { status: e.target.value } }); await loadAll(); showToast('Estado actualizado'); } catch (err) { showToast('Error: ' + err.message, 'err'); }
+                      }} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '6px 10px', color: '#fff', fontSize: 12, fontFamily: FB, cursor: 'pointer' }}>
+                        <option value="new" style={{ background: '#1a1a1a' }}>🆕 Nuevo</option>
+                        <option value="searching" style={{ background: '#1a1a1a' }}>🔍 Buscando</option>
+                        <option value="found" style={{ background: '#1a1a1a' }}>✅ Encontrado</option>
+                        <option value="contacted" style={{ background: '#1a1a1a' }}>📞 Contactado</option>
+                        <option value="closed" style={{ background: '#1a1a1a' }}>🤝 Cerrado</option>
+                      </select>
+                    </td>
                   </tr>
                 ))}
               </tbody>
