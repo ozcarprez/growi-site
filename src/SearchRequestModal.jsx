@@ -126,13 +126,9 @@ export default function SearchRequestModal({ isOpen, onClose, lang = 'es' }) {
           </Field>
           <Field label={es ? 'Detalles adicionales' : 'Additional details'}><textarea style={{ ..._inputStyle, resize: 'vertical' }} value={notes} onChange={e => setNotes(e.target.value)} placeholder={es ? 'Certificaciones, especificaciones, timeline...' : 'Certifications, specs, timeline...'} rows={3} /></Field>
 
-          {/* Free badge */}
-          <div style={{ background: 'rgba(74,222,128,0.04)', border: '1px solid rgba(74,222,128,0.15)', borderRadius: 14, padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 20 }}>🔍</span>
-            <div>
-              <span style={{ fontFamily: FB, fontSize: 13, fontWeight: 600, color: '#4ade80' }}>{es ? 'Sin costo' : 'No cost'}</span>
-              <span style={{ fontFamily: FB, fontSize: 12, color: 'rgba(255,255,255,0.4)', marginLeft: 8 }}>{es ? '— Yo busco el productor por ti' : "— I'll find the producer for you"}</span>
-            </div>
+          {/* Info badge */}
+          <div style={{ background: 'rgba(74,222,128,0.04)', border: '1px solid rgba(74,222,128,0.15)', borderRadius: 14, padding: '14px 18px', marginBottom: 16 }}>
+            <span style={{ fontFamily: FB, fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{es ? 'Te confirmo disponibilidad y te contacto con los detalles.' : "I'll confirm availability and contact you with the details."}</span>
           </div>
 
           <div style={{ display: 'flex', gap: 10 }}>
